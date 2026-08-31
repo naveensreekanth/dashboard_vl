@@ -1,0 +1,12 @@
+.cursor/
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.env.*
+.venv/
+venv/
+.streamlit/
+*.log
+.DS_Store
+Thumbs.db
