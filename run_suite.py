@@ -99,6 +99,7 @@ def main():
             f.write("NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api\n")
             f.write("NEXT_PUBLIC_KPI_M_BIST_SHMOO_URL=http://127.0.0.1:5000\n")
             f.write("NEXT_PUBLIC_KPI_TEST_TIME_URL=http://127.0.0.1:5173\n")
+            f.write("NEXT_PUBLIC_KPI_RETEST_URL=http://127.0.0.1:5175\n")
 
         print("  -> Starting ATE Intelligence Local Backend on http://127.0.0.1:8000 ...")
         ate_backend_proc = subprocess.Popen(
@@ -156,19 +157,57 @@ def main():
     except Exception as e:
         print(f"Failed to start DTL Frontend: {e}")
 
+    # 6. Start Retest Benefit Prediction AI Backend (Port 8002)
+    retest_dir = os.path.join(root, "tools", "retest_reduction")
+    print("[6/6] Starting Retest AI Backend on http://127.0.0.1:8002 ...")
+    try:
+        retest_env = {**os.environ, "PYTHONPATH": os.path.join(retest_dir)}
+        retest_backend_proc = subprocess.Popen(
+            [sys.executable, "-m", "uvicorn", "retest_ai.api.main:app", "--host", "127.0.0.1", "--port", "8002"],
+            cwd=retest_dir,
+            env=retest_env,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        processes.append(retest_backend_proc)
+    except Exception as e:
+        print(f"Failed to start Retest AI Backend: {e}")
+
+    # 7. Start Retest AI React Frontend (Port 5175)
+    retest_frontend_dir = os.path.join(retest_dir, "frontend")
+    print("  -> Starting Retest AI React UI on http://127.0.0.1:5175 ...")
+    try:
+        if not os.path.exists(os.path.join(retest_frontend_dir, "node_modules")):
+            print("Installing node_modules for Retest AI frontend...")
+            subprocess.run("npm install", shell=True, cwd=retest_frontend_dir)
+
+        retest_frontend_proc = subprocess.Popen(
+            ["npm", "run", "dev", "--", "--port", "5175"],
+            cwd=retest_frontend_dir,
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        processes.append(retest_frontend_proc)
+    except Exception as e:
+        print(f"Failed to start Retest AI Frontend: {e}")
+
     # Wait for servers to wake up
     print("\nWarming up servers and checking ports...")
     wait_for_port(8000, timeout=10)
     wait_for_port(3000, timeout=12)
     wait_for_port(5174, timeout=15)
+    wait_for_port(5175, timeout=15)
 
-    # Open the browser to the Central Next.js Dashboard and the DTL Dashboard
+    # Open the browser to the dashboards
     print("\nOpening dashboards in your default browser:")
     print("  -> Central Dashboard: http://127.0.0.1:3000")
     print("  -> Dynamic Test Limits Dashboard: http://127.0.0.1:5174/three-month")
+    print("  -> AI Retest Reduction Dashboard: http://127.0.0.1:5175")
     
     webbrowser.open("http://127.0.0.1:3000")
     webbrowser.open("http://127.0.0.1:5174/three-month")
+    webbrowser.open("http://127.0.0.1:5175")
 
     print("\nSuite is running. Press Ctrl+C to stop all services.")
     
