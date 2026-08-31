@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "ATE vector memory live dashboard (React + Node)",
   "scripts": {
-    "dev": "npm run build --prefix client && concurrently -k \"npm run server\" \"npm run client\"",
+    "dev": "npm run build --prefix client && node server/index.js",
     "server": "node server/index.js",
     "client": "npm run dev --prefix client",
     "install:all": "npm install && npm install --prefix client",

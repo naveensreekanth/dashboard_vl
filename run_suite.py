@@ -194,8 +194,12 @@ def main():
 
     # Wait for servers to wake up
     print("\nWarming up servers and checking ports...")
+    wait_for_port(5000, timeout=10)
+    wait_for_port(8787, timeout=12)
     wait_for_port(8000, timeout=10)
-    wait_for_port(3000, timeout=12)
+    wait_for_port(8001, timeout=10)
+    wait_for_port(8002, timeout=10)
+    wait_for_port(3000, timeout=15)
     wait_for_port(5174, timeout=15)
     wait_for_port(5175, timeout=15)
 
