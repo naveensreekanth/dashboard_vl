@@ -147,7 +147,7 @@ def main():
             subprocess.run("npm install", shell=True, cwd=dtl_frontend_dir)
 
         dtl_frontend_process = subprocess.Popen(
-            ["npm", "run", "dev", "--", "--port", "5174"],
+            ["npx", "vite", "--host", "127.0.0.1", "--port", "5174"],
             cwd=dtl_frontend_dir,
             shell=True,
             stdout=subprocess.DEVNULL,
@@ -182,7 +182,7 @@ def main():
             subprocess.run("npm install", shell=True, cwd=retest_frontend_dir)
 
         retest_frontend_proc = subprocess.Popen(
-            ["npm", "run", "dev", "--", "--port", "5175"],
+            ["npx", "vite", "--host", "127.0.0.1", "--port", "5175"],
             cwd=retest_frontend_dir,
             shell=True,
             stdout=subprocess.DEVNULL,
