@@ -122,12 +122,38 @@ export function OptimizationKpiCard({
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div
-          className={`font-semibold tracking-[0.01em] text-[var(--text-bright)] ${
-            isDense ? "text-[12px]" : "text-[13px]"
-          }`}
-        >
-          {kpi.name}
+        <div className="flex items-center gap-2">
+          {isShmoo && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("switchSuiteTab", { detail: { tab: "shmoo" } }))}
+              className="rounded border border-[rgba(107,193,242,0.3)] bg-[rgba(107,193,242,0.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--cyan)] hover:bg-[rgba(107,193,242,0.22)]"
+            >
+              Open Tool ↗
+            </button>
+          )}
+          {isTestTime && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("switchSuiteTab", { detail: { tab: "test_time" } }))}
+              className="rounded border border-[rgba(107,193,242,0.3)] bg-[rgba(107,193,242,0.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--cyan)] hover:bg-[rgba(107,193,242,0.22)]"
+            >
+              Open Tool ↗
+            </button>
+          )}
+          {isRetest && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("switchSuiteTab", { detail: { tab: "retest" } }))}
+              className="rounded border border-[rgba(107,193,242,0.3)] bg-[rgba(107,193,242,0.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--cyan)] hover:bg-[rgba(107,193,242,0.22)]"
+            >
+              Open Tool ↗
+            </button>
+          )}
+          <div
+            className={`font-semibold tracking-[0.01em] text-[var(--text-bright)] ${
+              isDense ? "text-[12px]" : "text-[13px]"
+            }`}
+          >
+            {kpi.name}
+          </div>
         </div>
         <span
           className={`shrink-0 rounded px-[7px] py-0.5 text-[10px] font-semibold tracking-[0.04em] transition-[background-color,color] duration-200 ${

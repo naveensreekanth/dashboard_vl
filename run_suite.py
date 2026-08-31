@@ -199,15 +199,11 @@ def main():
     wait_for_port(5174, timeout=15)
     wait_for_port(5175, timeout=15)
 
-    # Open the browser to the dashboards
-    print("\nOpening dashboards in your default browser:")
-    print("  -> Central Dashboard: http://127.0.0.1:3000")
-    print("  -> Dynamic Test Limits Dashboard: http://127.0.0.1:5174/three-month")
-    print("  -> AI Retest Reduction Dashboard: http://127.0.0.1:5175")
+    # Open the browser to the single unified central dashboard
+    print("\nOpening Unified ATE Intelligence Suite in your default browser:")
+    print("  -> Central Dashboard (Single Window): http://127.0.0.1:3000")
     
     webbrowser.open("http://127.0.0.1:3000")
-    webbrowser.open("http://127.0.0.1:5174/three-month")
-    webbrowser.open("http://127.0.0.1:5175")
 
     print("\nSuite is running. Press Ctrl+C to stop all services.")
     

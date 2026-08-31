@@ -47,7 +47,15 @@ export function DynamicTestLimits({ data }: { data: TestLimitsOut | null }) {
     <>
       <div className="vl-card flex flex-col gap-2.5 overflow-hidden p-4">
         <div className="flex items-start justify-between">
-          <div className="text-[13px] font-semibold text-[#f2f7fc]">Dynamic Test Limits</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("switchSuiteTab", { detail: { tab: "dtl" } }))}
+              className="rounded border border-[rgba(107,193,242,0.3)] bg-[rgba(107,193,242,0.12)] px-2 py-0.5 text-[10px] font-bold text-[var(--cyan)] hover:bg-[rgba(107,193,242,0.22)]"
+            >
+              Open DTL Tool ↗
+            </button>
+            <div className="text-[13px] font-semibold text-[#f2f7fc]">Dynamic Test Limits</div>
+          </div>
           <span className="rounded bg-[var(--cyan-dim)] px-[7px] py-0.5 text-[10px] font-semibold text-[var(--cyan)]">
             {data ? `${data.adjustments_today} today` : "— today"}
           </span>
