@@ -95,11 +95,19 @@ def main():
         
         # Build environment file pointing to local backends
         env_path = os.path.join(ate_frontend_dir, ".env.local")
-        if not os.path.exists(env_path):
-            with open(env_path, "w") as f:
-                f.write("NEXT_PUBLIC_API_BASE_URL=https://wafer-yield-api.onrender.com\n")
-                f.write("NEXT_PUBLIC_KPI_M_BIST_SHMOO_URL=http://127.0.0.1:5000\n")
-                f.write("NEXT_PUBLIC_KPI_TEST_TIME_URL=http://127.0.0.1:5173\n")
+        with open(env_path, "w") as f:
+            f.write("NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api\n")
+            f.write("NEXT_PUBLIC_KPI_M_BIST_SHMOO_URL=http://127.0.0.1:5000\n")
+            f.write("NEXT_PUBLIC_KPI_TEST_TIME_URL=http://127.0.0.1:5173\n")
+
+        print("  -> Starting ATE Intelligence Local Backend on http://127.0.0.1:8000 ...")
+        ate_backend_proc = subprocess.Popen(
+            [sys.executable, "ate_backend.py"],
+            cwd=ate_frontend_dir,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        processes.append(ate_backend_proc)
 
         ate_process = subprocess.Popen(
             ["npm", "run", "dev"],
@@ -112,14 +120,14 @@ def main():
     except Exception as e:
         print(f"Failed to start ATE Frontend: {e}")
 
-    # 4. Start Dynamic Test Limit (DTL) FastAPI Backend (Port 8000)
+    # 4. Start Dynamic Test Limit (DTL) FastAPI Backend (Port 8001)
     dtl_dir = os.path.join(root, "tools", "dtl")
-    print("[4/5] Starting Dynamic Test Limits (DTL) Backend on http://127.0.0.1:8000 ...")
+    print("[4/5] Starting Dynamic Test Limits (DTL) Backend on http://127.0.0.1:8001 ...")
     try:
         # Add src/ folder of DTL to python path so it imports dtl_agent cleanly
         dtl_env = {**os.environ, "PYTHONPATH": os.path.join(dtl_dir, "src")}
         dtl_backend_process = subprocess.Popen(
-            [sys.executable, "-m", "uvicorn", "dtl_agent.api.app:create_app", "--factory", "--host", "127.0.0.1", "--port", "8000"],
+            [sys.executable, "-m", "uvicorn", "dtl_agent.api.app:create_app", "--factory", "--host", "127.0.0.1", "--port", "8001"],
             cwd=dtl_dir,
             env=dtl_env,
             stdout=subprocess.DEVNULL,
@@ -150,6 +158,7 @@ def main():
 
     # Wait for servers to wake up
     print("\nWarming up servers and checking ports...")
+    wait_for_port(8000, timeout=10)
     wait_for_port(3000, timeout=12)
     wait_for_port(5174, timeout=15)
 
