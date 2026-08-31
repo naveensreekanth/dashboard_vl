@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHMOO ML — Semiconductor Characterization & Optimization Engine</title>
+  
+  <!-- Professional Engineering Typography: Inter + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       Professional Engineering Design System (Dark Terminal Theme)
+       ========================================================================== */
+    :root {
+      /* Base Canvas & Panels */
+      --bg-base: #0b0d12;
+      --bg-panel: #121622;
+      --bg-surface: #181e2c;
+      --bg-subtle: #1f2738;
+      
+      /* Hairline Borders */
+      --border-base: #232d3f;
+      --border-subtle: #1c2433;
+      --border-highlight: #334155;
+
+      /* Restrained Primary Accent (Industrial Cobalt) */
+      --accent-primary: #2563eb;
+      --accent-primary-hover: #1d4ed8;
+      --accent-primary-subtle: rgba(37, 99, 235, 0.12);
+
+      /* Semantic Meaning Colors */
+      --semantic-pass: #10b981;
+      --semantic-pass-bg: rgba(16, 185, 129, 0.12);
+      --semantic-pass-border: rgba(16, 185, 129, 0.3);
+
+      --semantic-warn: #f59e0b;
+      --semantic-warn-bg: rgba(245, 158, 11, 0.12);
+      --semantic-warn-border: rgba(245, 158, 11, 0.3);
+
+      --semantic-fail: #ef4444;
+      --semantic-fail-bg: rgba(239, 68, 68, 0.12);
+      --semantic-fail-border: rgba(239, 68, 68, 0.3);
+
+      --semantic-purple: #8b5cf6;
+      --semantic-purple-bg: rgba(139, 92, 246, 0.12);
+      --semantic-purple-border: rgba(139, 92, 246, 0.3);
+
+      /* Typography Colors */
+      --text-main: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-eyebrow: #475569;
+
+      /* Typography Families */
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+      /* Graph Specific Variables (Light background for high legibility) */
+      --bg-graph: #f8fafc;
+      --grid-graph: #e2e8f0;
+      --text-graph: #475569;
+    }
+
+    /* Light Theme Overrides */
+    body.light-theme {
+      --bg-base: #f4f6fa;
+      --bg-panel: #ffffff;
+      --bg-surface: #f8fafc;
+      --bg-subtle: #e2e8f0;
+
+      --border-base: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --border-highlight: #94a3b8;
+
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #475569;
+      --text-eyebrow: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'tnum';
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 3rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Monospace Data Numbers */
+    .mono-num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    /* ==========================================================================
+       Header & Engine Navigation Bar
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-base);
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+
+    .system-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--semantic-pass);
+    }
+
+    .status-dot.idle {
+      background-color: var(--text-muted);
+    }
+
+    .brand-sub {
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--bg-panel);
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--border-base);
+      border-radius: 6px;
+    }
+
+    .header-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .engine-select {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-highlight);
+      padding: 0.35rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .engine-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* ==========================================================================
+       Engineering Panels (Clean 1px Hairline Borders, No Glow)
+       ========================================================================== */
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-base);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .panel-eyebrow {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ==========================================================================
+       Upload Drop Zone
+       ========================================================================== */
+    .upload-zone {
+      border: 1.5px dashed var(--border-highlight);
+      border-radius: 8px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      background: var(--bg-surface);
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--accent-primary);
+      background: var(--bg-subtle);
+    }
+
+    .upload-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-primary);
+    }
+
+    .upload-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .upload-sub {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .upload-req {
+      margin-top: 0.75rem;
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: var(--bg-panel);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-base);
+    }
+
+    input[type="file"] { display: none; }
+
+    /* ==========================================================================
+       Results Dashboard Layout
+       ========================================================================== */
+    .dashboard {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Top-Line Metrics Row (High Density, Monospaced Numerals) */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 800px) {
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-base);
+      border-radius: 6px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .metric-eyebrow {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* ==========================================================================
+       Multi-Device Corner Performance Section
+       ========================================================================== */
+    .multi-device-panel {
+      display: none;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .performers-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 650px) {
+      .performers-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .performer-card {
+      border-radius: 6px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      border: 1px solid var(--border-base);
+      background: var(--bg-surface);
+    }
+
+    .performer-card.high {
+      border-left: 3px solid var(--semantic-pass);
+    }
+
+    .performer-card.low {
+      border-left: 3px solid var(--semantic-fail);
+    }
+
+    .performer-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .performer-card.high .performer-header { color: var(--semantic-pass); }
+    .performer-card.low .performer-header { color: var(--semantic-fail); }
+
+    .performer-id {
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .performer-detail {
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+
+    /* Ranking Table */
+    .table-wrapper {
+      overflow-x: auto;
+      max-height: 200px;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border-base);
+      background: var(--bg-surface);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    .data-table th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.55rem 0.85rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-base);
+      z-index: 2;
+    }
+
+    .data-table td {
+      padding: 0.5rem 0.85rem;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+    }
+
+    .badge-high { background: var(--semantic-pass-bg); color: var(--semantic-pass); border: 1px solid var(--semantic-pass-border); }
+    .badge-low { background: var(--semantic-fail-bg); color: var(--semantic-fail); border: 1px solid var(--semantic-fail-border); }
+    .badge-nom { background: var(--bg-panel); color: var(--text-muted); border: 1px solid var(--border-base); }
+
+    /* ==========================================================================
+       Interactive Canvas Plot Section
+       ========================================================================== */
+    .plot-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-select {
+      background: var(--bg-surface);
+      color: var(--text-main);
+      border: 1px solid var(--border-base);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .plot-legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .plot-wrapper {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background: #090c12;
+      border-radius: 6px;
+      border: 1px solid var(--border-base);
+      overflow: hidden;
+    }
+
+    #shmoo-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Floating Tooltip */
+    .chart-tooltip {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      background: #0f141f;
+      border: 1px solid var(--border-highlight);
+      border-radius: 4px;
+      padding: 0.5rem 0.7rem;
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      line-height: 1.4;
+      z-index: 10;
+      transform: translate(10px, 10px);
+      white-space: nowrap;
+    }
+
+    .tooltip-header {
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 0.2rem;
+      border-bottom: 1px solid var(--border-base);
+      padding-bottom: 0.2rem;
+    }
+
+    .tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .tooltip-label { color: var(--text-muted); }
+    .tooltip-val { font-weight: 600; color: var(--text-main); }
+
+    /* Diagnostic Classification Box */
+    .diagnostic-panel {
+      margin-top: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .diag-header-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .diag-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .diag-badge {
+      background: var(--bg-panel);
+      color: var(--text-main);
+      border: 1px solid var(--border-highlight);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+
+    .diag-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       Semiconductor Test Use Cases & Cost Quadrant
+       ========================================================================== */
+    .use-case-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .use-case-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 550px) {
+      .use-case-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .use-case-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-base);
+      border-radius: 6px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .use-case-card.c1 { border-top: 2px solid var(--accent-primary); }
+    .use-case-card.c2 { border-top: 2px solid var(--semantic-pass); }
+    .use-case-card.c3 { border-top: 2px solid var(--semantic-warn); }
+    .use-case-card.c4 { border-top: 2px solid var(--semantic-purple); }
+
+    .cost-pill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cost-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .cost-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-main);
+    }
+
+    .cost-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cost-badge {
+      font-size: 0.68rem;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .use-case-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .use-case-formula {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      background: var(--bg-panel);
+      border: 1px solid var(--border-base);
+      padding: 0.25rem 0.45rem;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      line-height: 1.3;
+    }
+
+    .use-case-math {
+      font-size: 0.73rem;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .use-case-desc {
+      font-size: 0.76rem;
+      line-height: 1.4;
+      color: var(--text-secondary);
+    }
+
+    .cost-comparison {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      border-top: 1px dashed var(--border-base);
+      padding-top: 0.35rem;
+      margin-top: 0.2rem;
+    }
+
+    .use-case-footnote {
+      margin-top: 0.65rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Total Savings Banner */
+    .total-roi-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--semantic-pass-bg);
+      border: 1px solid var(--semantic-pass-border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--semantic-pass);
+    }
+
+    /* ==========================================================================
+       Controls & PDF Export Bar
+       ========================================================================== */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-base);
+      border-radius: 6px;
+    }
+
+    .mode-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-base);
+      background: var(--bg-surface);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .radio-label:has(input:checked) {
+      color: var(--text-main);
+      border-color: var(--accent-primary);
+      background: var(--bg-subtle);
+    }
+
+    .btn-primary {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border: 1px solid var(--accent-primary);
+      padding: 0.55rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-primary-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Loading Spinner */
+    .loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-base);
+      border-bottom-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: rotation 0.8s linear infinite;
+    }
+
+    @keyframes rotation {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Top Engineering App Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-row">
+          <h1 class="brand-title">SHMOO ML</h1>
+          <div class="system-status-pill">
+            <span class="status-dot idle" id="system-status-dot"></span>
+            <span id="system-status-text">SYSTEM IDLE</span>
+          </div>
+        </div>
+        <p class="brand-sub">Parametric VDD-Frequency Boundary Characterization & Guardband Engine</p>
+      </div>
+      
+      <div class="header-right">
+        <button id="theme-toggle-btn" class="engine-select" style="margin-right: 0.5rem; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-base);">
+          <span>🌓</span> <span id="theme-btn-text">Light Mode</span>
+        </button>
+        <span class="header-label">Methodology:</span>
+        <select id="methodology-select" class="engine-select">
+          <option value="Scan Chain Testing">Scan Chain Testing</option>
+          <option value="MBIST">MBIST (Memory Built-In Self-Test)</option>
+          <option value="LBIST">LBIST (Logic Built-In Self-Test)</option>
+          <option value="ATPG">ATPG (Automatic Test Pattern Generation)</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="panel" id="upload-card">
+      <div class="upload-zone" id="drop-zone">
+        <div class="upload-icon">⤓</div>
+        <div class="upload-title">Drop Silicon Parametric Dataset or Click to Browse</div>
+        <div class="upload-sub">Supports CSV and Excel files (.csv, .xlsx) with VDD, Frequency, and Pass/Fail test vectors</div>
+        <div class="upload-req">Expected Columns: VDD_V, Frequency_GHz, Test_Result [, Failure_Code, Die_ID]</div>
+        <input type="file" id="file-input" accept=".csv, .xlsx, .xls">
+      </div>
+
+      <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <div id="loader-text" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-secondary);">
+          Executing Gradient Boosting & RANSAC Boundary Extraction...
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Dashboard Output -->
+    <div class="dashboard" id="dashboard">
+      
+      <!-- 1. Top-Line Metrics Row -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-eyebrow">Model Accuracy</div>
+          <div class="metric-value" id="m-acc">--</div>
+          <div class="metric-sub">5-Fold Stratified CV</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-eyebrow">Recommended VDD</div>
+          <div class="metric-value" id="m-vdd">--</div>
+          <div class="metric-sub" id="m-vmargin">Voltage Margin: --</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-eyebrow">Recommended Freq</div>
+          <div class="metric-value" id="m-freq">--</div>
+          <div class="metric-sub" id="m-fmargin">Freq Margin: --</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-eyebrow">Boundary Model Fit</div>
+          <div class="metric-value" id="m-r2">--</div>
+          <div class="metric-sub" id="m-slope">Slope: --</div>
+        </div>
+      </div>
+
+      <!-- 2. Multi-Device Corner Analysis (Conditional) -->
+      <div class="panel multi-device-panel" id="multi-device-card">
+        <div class="panel-header">
+          <span class="panel-eyebrow">⊞ Multi-Device Population & Speed-Binning Ranking</span>
+          <span class="header-label" id="multi-device-count" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);">-- Devices</span>
+        </div>
+
+        <div class="performers-grid">
+          <div class="performer-card high">
+            <div class="performer-header">● Fastest Silicon Corner (High Performer)</div>
+            <div class="performer-id" id="high-id">--</div>
+            <div class="performer-detail" id="high-detail">Fmax @ Nom VDD: --</div>
+          </div>
+          <div class="performer-card low">
+            <div class="performer-header">● Speed-Limiting Corner (Low Performer)</div>
+            <div class="performer-id" id="low-id">--</div>
+            <div class="performer-detail" id="low-detail">Fmax @ Nom VDD: --</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Device ID</th>
+                <th>Classification</th>
+                <th>Fmax @ Nom VDD</th>
+                <th>Yield (%)</th>
+                <th>Rec. Operating Freq</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3. Interactive Shmoo Plot Panel -->
+      <div class="panel">
+        <div class="plot-toolbar">
+          <div class="filter-group">
+            <span class="header-label">View Mode:</span>
+            <select id="device-filter-select" class="filter-select">
+              <option value="all">Show All Devices (Ensemble)</option>
+              <option value="corners">Show High & Low Corners Only</option>
+            </select>
+          </div>
+          
+          <div class="plot-legend-bar">
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981;"></div><span>PASS</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div><span>FAIL (FREQ_MARGIN)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div><span>FAIL (TIMING/DEFECT)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#2563eb;"></div><span>Boundary Line</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div><span>Recommended OP (★)</span></div>
+          </div>
+        </div>
+
+        <div class="plot-wrapper" id="plot-wrapper">
+          <canvas id="shmoo-canvas"></canvas>
+          <div id="chart-tooltip" class="chart-tooltip">
+            <div class="tooltip-header" id="tt-device">Device D0001</div>
+            <div class="tooltip-row"><span class="tooltip-label">VDD (V):</span><span class="tooltip-val" id="tt-vdd">--</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Freq (GHz):</span><span class="tooltip-val" id="tt-freq">--</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Result:</span><span class="tooltip-val" id="tt-result">--</span></div>
+            <div class="tooltip-row"><span class="tooltip-label">Code:</span><span class="tooltip-val" id="tt-code">--</span></div>
+          </div>
+        </div>
+
+        <!-- Shmoo Pattern Diagnostic Box -->
+        <div class="diagnostic-panel">
+          <div class="diag-header-row">
+            <span class="diag-eyebrow">Identified Pattern Signature:</span>
+            <span class="diag-badge" id="shmoo-type-badge">Normal Shmoo</span>
+          </div>
+          <p class="diag-desc" id="shmoo-type-desc">--</p>
+        </div>
+      </div>
+
+      <!-- 4. Semiconductor Test Use Cases & Cost Optimization Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <span class="panel-eyebrow">⚡ Semiconductor Test Use Cases & Optimization ROI</span>
+            <p style="font-size: 0.76rem; color: var(--text-secondary); margin-top: 0.15rem;">
+              Four core parametric test applications parameterized with dataset metrics & savings formulas
+            </p>
+          </div>
+          <div class="total-roi-banner" id="total-savings-badge">
+            💰 Total Value: <span id="q-total-saved">$7.38</span> / Device (<span id="q-lot-saved">$7,380</span> / Lot)
+          </div>
+        </div>
+
+        <div class="use-case-grid">
+          <!-- Card 1: Characterization -->
+          <div class="use-case-card c1">
+            <div class="cost-pill-row">
+              <div class="cost-pill"><span class="cost-value" id="q-char-saved">$1.80</span><span class="cost-label">Saved / dev</span></div>
+              <span class="cost-badge" id="q-char-pct" style="background: rgba(37, 99, 235, 0.15); color: #3b82f6;">-72.0%</span>
+            </div>
+            <div class="use-case-title">Characterization</div>
+            <div class="use-case-formula" id="q-char-formula">
+              (N<sub>raster</sub> - N<sub>sparse</sub>) × (t<sub>vector</sub> × Rate<sub>ATE</sub>)
+            </div>
+            <div class="use-case-math" id="q-char-math">(500 pts - 140 pts) × $0.005/pt</div>
+            <div class="use-case-desc" id="q-char-desc">Replaced 500 exhaustive raster sweep with 140 ML boundary points (72.0% faster).</div>
+            <div class="cost-comparison">
+              <span>Base: <s id="q-char-base">$2.50</s></span>
+              <span style="color: #3b82f6; font-weight: 600;">Opt: <span id="q-char-opt">$0.70</span></span>
+            </div>
+          </div>
+
+          <!-- Card 2: Yield Analysis -->
+          <div class="use-case-card c2">
+            <div class="cost-pill-row">
+              <div class="cost-pill"><span class="cost-value" id="q-yield-saved">$1.37</span><span class="cost-label">Saved / dev</span></div>
+              <span class="cost-badge" id="q-yield-pct" style="background: var(--semantic-pass-bg); color: var(--semantic-pass);">-76.1%</span>
+            </div>
+            <div class="use-case-title">Yield Analysis</div>
+            <div class="use-case-formula" id="q-yield-formula">
+              ΔY<sub>recovered</sub> × Cost<sub>die_mfg</sub>
+            </div>
+            <div class="use-case-math" id="q-yield-math">+3.8% Yield Recovery via R²=0.98 Guardband</div>
+            <div class="use-case-desc" id="q-yield-desc">Tightened conservative 25% guardband to calibrated 275mV / 169MHz margin.</div>
+            <div class="cost-comparison">
+              <span>Base: <s id="q-yield-base">$1.80</s></span>
+              <span style="color: var(--semantic-pass); font-weight: 600;">Opt: <span id="q-yield-opt">$0.43</span></span>
+            </div>
+          </div>
+
+          <!-- Card 3: Debugging -->
+          <div class="use-case-card c3">
+            <div class="cost-pill-row">
+              <div class="cost-pill"><span class="cost-value" id="q-debug-saved">$3.44</span><span class="cost-label">Saved / dev</span></div>
+              <span class="cost-badge" id="q-debug-pct" style="background: var(--semantic-warn-bg); color: var(--semantic-warn);">-81.9%</span>
+            </div>
+            <div class="use-case-title">Debugging</div>
+            <div class="use-case-formula" id="q-debug-formula">
+              C<sub>manual_lab</sub> × Accuracy<sub>ML</sub> × η<sub>auto</sub>
+            </div>
+            <div class="use-case-math" id="q-debug-math">$4.20 × (96.4% CV Acc × 85% Auto)</div>
+            <div class="use-case-desc" id="q-debug-desc">Instant pattern classification (Normal Shmoo) eliminates weeks of manual waveform lab triage.</div>
+            <div class="cost-comparison">
+              <span>Base: <s id="q-debug-base">$4.20</s></span>
+              <span style="color: var(--semantic-warn); font-weight: 600;">Opt: <span id="q-debug-opt">$0.76</span></span>
+            </div>
+          </div>
+
+          <!-- Card 4: Binning -->
+          <div class="use-case-card c4">
+            <div class="cost-pill-row">
+              <div class="cost-pill"><span class="cost-value" id="q-binning-saved">$0.77</span><span class="cost-label">Saved / dev</span></div>
+              <span class="cost-badge" id="q-binning-pct" style="background: var(--semantic-purple-bg); color: var(--semantic-purple);">-85.6%</span>
+            </div>
+            <div class="use-case-title">Binning</div>
+            <div class="use-case-formula" id="q-binning-formula">
+              ASP<sub>premium</sub> × Fmax<sub>precision</sub> - Overkill<sub>loss</sub>
+            </div>
+            <div class="use-case-math" id="q-binning-math">$0.90 × (R²=0.98 Fit × 88% Precision)</div>
+            <div class="use-case-desc" id="q-binning-desc">Per-device boundary extraction (2.28 GHz/V) isolates premium speed-grade dies.</div>
+            <div class="cost-comparison">
+              <span>Base: <s id="q-binning-base">$0.90</s></span>
+              <span style="color: var(--semantic-purple); font-weight: 600;">Opt: <span id="q-binning-opt">$0.13</span></span>
+            </div>
+          </div>
+        </div>
+
+        <p class="use-case-footnote">Cost savings and ROI are dynamically computed from dataset features, ATE point reduction, ML cross-validation accuracy, and calibrated R² guardband margins.</p>
+      </div>
+
+      <!-- 5. Controls & Report Generation Bar -->
+      <div class="controls-bar">
+        <div class="mode-selector">
+          <span class="header-label">Narrative Mode:</span>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="text-mode" value="template" checked>
+              <span>Template Engine</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="text-mode" value="llm">
+              <span>Local LLM (Phi-3 Mini)</span>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-report">Export Executive Report (PDF)</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const loader = document.getElementById('loader');
+    const uploadCard = document.getElementById('upload-card');
+    const dashboard = document.getElementById('dashboard');
+    const canvas = document.getElementById('shmoo-canvas');
+    const ctx = canvas.getContext('2d');
+    const tooltip = document.getElementById('chart-tooltip');
+    const filterSelect = document.getElementById('device-filter-select');
+
+    let currentSessionId = null;
+    let globalPlotData = null;
+    let globalResults = null;
+    let globalOptimizations = null;
+
+    // ── Theme Switcher Engine ──────────────────────────────────────────────────
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeBtnText = document.getElementById('theme-btn-text');
+
+    // Load initial theme from storage or default to dark
+    const storedTheme = localStorage.getItem('theme') || 'dark';
+    if (storedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      if (themeBtnText) themeBtnText.textContent = 'Dark Mode';
+    } else {
+      document.body.classList.remove('light-theme');
+      if (themeBtnText) themeBtnText.textContent = 'Light Mode';
+    }
+
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        if (isLight) {
+          localStorage.setItem('theme', 'light');
+          if (themeBtnText) themeBtnText.textContent = 'Dark Mode';
+        } else {
+          localStorage.setItem('theme', 'dark');
+          if (themeBtnText) themeBtnText.textContent = 'Light Mode';
+        }
+        // Redraw canvas with new theme variables
+        if (globalPlotData) {
+          drawInteractivePlot();
+        }
+      });
+    }
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        handleUpload(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleUpload(e.target.files[0]);
+      }
+    });
+
+    async function handleUpload(file) {
+      dropZone.style.display = 'none';
+      loader.style.display = 'flex';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'X-API-Key': 'vannakam-da-mapla'
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+        currentSessionId = data.session_id;
+        globalPlotData = data.plot_data;
+        globalResults = data.results;
+        globalOptimizations = data.optimizations;
+
+        renderDashboard(data);
+      } catch (err) {
+        alert('Error: ' + err.message);
+        dropZone.style.display = 'block';
+        loader.style.display = 'none';
+      }
+    }
+
+    function renderDashboard(data) {
+      uploadCard.style.display = 'none';
+      dashboard.style.display = 'flex';
+
+      // Update System Status Dot in Header
+      const statusDot = document.getElementById('system-status-dot');
+      const statusText = document.getElementById('system-status-text');
+      if (statusDot) statusDot.classList.remove('idle');
+      if (statusText) statusText.textContent = 'PROCESSED & READY';
+      
+      const r = data.results;
+      document.getElementById('m-acc').textContent = (r.cv_accuracy * 100).toFixed(1) + '%';
+      document.getElementById('m-vdd').textContent = r.recommended_vdd.toFixed(3) + ' V';
+      document.getElementById('m-vmargin').textContent = 'Voltage Margin: +' + (r.voltage_margin_v * 1000).toFixed(0) + ' mV';
+      document.getElementById('m-freq').textContent = r.recommended_freq.toFixed(3) + ' GHz';
+      document.getElementById('m-fmargin').textContent = 'Freq Margin: +' + (r.freq_margin_ghz * 1000).toFixed(0) + ' MHz';
+      document.getElementById('m-r2').textContent = r.boundary_r2.toFixed(3);
+      document.getElementById('m-slope').textContent = 'Slope: ' + r.boundary_slope.toFixed(2) + ' GHz/V';
+
+      // Update Shmoo Pattern Classification & Diagnostic Card
+      document.getElementById('shmoo-type-badge').textContent = r.shmoo_plot_type || 'Normal Shmoo';
+      document.getElementById('shmoo-type-desc').textContent = r.shmoo_type_description || '';
+
+      // Populate Quadrant Cards Dynamically from Dataset Results
+      if (data.optimizations && data.optimizations.quadrant_data) {
+        const qd = data.optimizations.quadrant_data;
+        document.getElementById('q-total-saved').textContent = `$${qd.total_saved_per_device.toFixed(2)}`;
+        document.getElementById('q-lot-saved').textContent = `$${qd.total_saved_per_lot.toLocaleString()}`;
+
+        // Characterization
+        document.getElementById('q-char-saved').textContent = `$${qd.characterization.saved_cost.toFixed(2)}`;
+        document.getElementById('q-char-pct').textContent = `-${qd.characterization.pct_saved}%`;
+        document.getElementById('q-char-math').textContent = qd.characterization.formula_math;
+        document.getElementById('q-char-desc').textContent = qd.characterization.details;
+        document.getElementById('q-char-base').textContent = `$${qd.characterization.base_cost.toFixed(2)}`;
+        document.getElementById('q-char-opt').textContent = `$${qd.characterization.opt_cost.toFixed(2)}`;
+
+        // Yield Analysis
+        document.getElementById('q-yield-saved').textContent = `$${qd.yield_analysis.saved_cost.toFixed(2)}`;
+        document.getElementById('q-yield-pct').textContent = `-${qd.yield_analysis.pct_saved}%`;
+        document.getElementById('q-yield-math').textContent = qd.yield_analysis.formula_math;
+        document.getElementById('q-yield-desc').textContent = qd.yield_analysis.details;
+        document.getElementById('q-yield-base').textContent = `$${qd.yield_analysis.base_cost.toFixed(2)}`;
+        document.getElementById('q-yield-opt').textContent = `$${qd.yield_analysis.opt_cost.toFixed(2)}`;
+
+        // Debugging
+        document.getElementById('q-debug-saved').textContent = `$${qd.debugging.saved_cost.toFixed(2)}`;
+        document.getElementById('q-debug-pct').textContent = `-${qd.debugging.pct_saved}%`;
+        document.getElementById('q-debug-math').textContent = qd.debugging.formula_math;
+        document.getElementById('q-debug-desc').textContent = qd.debugging.details;
+        document.getElementById('q-debug-base').textContent = `$${qd.debugging.base_cost.toFixed(2)}`;
+        document.getElementById('q-debug-opt').textContent = `$${qd.debugging.opt_cost.toFixed(2)}`;
+
+        // Binning
+        document.getElementById('q-binning-saved').textContent = `$${qd.binning.saved_cost.toFixed(2)}`;
+        document.getElementById('q-binning-pct').textContent = `-${qd.binning.pct_saved}%`;
+        document.getElementById('q-binning-math').textContent = qd.binning.formula_math;
+        document.getElementById('q-binning-desc').textContent = qd.binning.details;
+        document.getElementById('q-binning-base').textContent = `$${qd.binning.base_cost.toFixed(2)}`;
+        document.getElementById('q-binning-opt').textContent = `$${qd.binning.opt_cost.toFixed(2)}`;
+      }
+
+      // Setup Multi-Device section & filter options
+      const multiCard = document.getElementById('multi-device-card');
+      filterSelect.innerHTML = '<option value="all">Show All Devices (Ensemble)</option><option value="corners">Show High & Low Corners Only</option>';
+
+      if (r.is_multi_die && r.die_rankings && r.die_rankings.length > 0) {
+        multiCard.style.display = 'flex';
+        const countEl = document.getElementById('multi-device-count');
+        if (countEl) countEl.textContent = `${r.die_rankings.length} Devices Screened`;
+
+        if (r.high_performer) {
+          document.getElementById('high-id').textContent = r.high_performer.die_id;
+          document.getElementById('high-detail').textContent = `Fmax: ${r.high_performer.fmax_at_nom.toFixed(2)} GHz | Yield: ${(r.high_performer.pass_rate * 100).toFixed(1)}%`;
+        }
+
+        if (r.low_performer) {
+          document.getElementById('low-id').textContent = r.low_performer.die_id;
+          document.getElementById('low-detail').textContent = `Fmax: ${r.low_performer.fmax_at_nom.toFixed(2)} GHz | Yield: ${(r.low_performer.pass_rate * 100).toFixed(1)}%`;
+        }
+
+        const tbody = document.getElementById('ranking-tbody');
+        tbody.innerHTML = '';
+        r.die_rankings.forEach(d => {
+          let badgeHtml = '<span class="badge-pill badge-nom">Nominal</span>';
+          if (r.high_performer && d.die_id === r.high_performer.die_id) {
+            badgeHtml = '<span class="badge-pill badge-high">High Performer</span>';
+          } else if (r.low_performer && d.die_id === r.low_performer.die_id) {
+            badgeHtml = '<span class="badge-pill badge-low">Low Performer</span>';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight:600; color:var(--text-main);">${d.die_id}</td>
+            <td>${badgeHtml}</td>
+            <td>${d.fmax_at_nom.toFixed(2)} GHz</td>
+            <td>${(d.pass_rate * 100).toFixed(1)}%</td>
+            <td>${d.recommended_freq.toFixed(2)} GHz</td>
+          `;
+          tbody.appendChild(tr);
+
+          // Populate filter dropdown
+          const opt = document.createElement('option');
+          opt.value = d.die_id;
+          opt.textContent = `Isolate Device: ${d.die_id}`;
+          filterSelect.appendChild(opt);
+        });
+      } else {
+        multiCard.style.display = 'none';
+      }
+
+      // Draw interactive canvas plot
+      drawInteractivePlot();
+    }
+
+    filterSelect.addEventListener('change', () => {
+      drawInteractivePlot();
+    });
+
+    window.addEventListener('resize', () => {
+      if (globalPlotData) drawInteractivePlot();
+    });
+
+    // ── Interactive Canvas Plotting Engine with Tooltips ───────────────────────
+    let spatialPoints = [];
+
+    function drawInteractivePlot() {
+      if (!globalPlotData || !globalResults) return;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const W = rect.width;
+      const H = rect.height;
+      const pad = { top: 25, right: 25, bottom: 40, left: 50 };
+      const plotW = W - pad.left - pad.right;
+      const plotH = H - pad.top - pad.bottom;
+
+      // Retrieve CSS variable colors dynamically for custom legibility
+      const computedStyle = getComputedStyle(document.body);
+      const bgGraph = computedStyle.getPropertyValue('--bg-graph').trim() || '#f8fafc';
+      const gridGraph = computedStyle.getPropertyValue('--grid-graph').trim() || '#e2e8f0';
+      const textGraph = computedStyle.getPropertyValue('--text-graph').trim() || '#475569';
+
+      // Scope Background
+      ctx.fillStyle = bgGraph;
+      ctx.fillRect(0, 0, W, H);
+
+      const vddMin = globalPlotData.vdd_range[0];
+      const vddMax = globalPlotData.vdd_range[1];
+      const freqMin = globalPlotData.freq_range[0];
+      const freqMax = globalPlotData.freq_range[1];
+
+      const vPad = (vddMax - vddMin) * 0.05 || 0.05;
+      const fPad = (freqMax - freqMin) * 0.08 || 0.1;
+      const minX = vddMin - vPad;
+      const maxX = vddMax + vPad;
+      const minY = freqMin - fPad;
+      const maxY = freqMax + fPad;
+
+      const toX = v => pad.left + ((v - minX) / (maxX - minX)) * plotW;
+      const toY = f => pad.top + plotH - ((f - minY) / (maxY - minY)) * plotH;
+
+      // Draw Grid & Axes (Low-contrast hairline grid)
+      ctx.strokeStyle = gridGraph;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+
+      const vSteps = 6;
+      for (let i = 0; i <= vSteps; i++) {
+        const vVal = minX + (i / vSteps) * (maxX - minX);
+        const x = toX(vVal);
+        ctx.beginPath();
+        ctx.moveTo(x, pad.top);
+        ctx.lineTo(x, pad.top + plotH);
+        ctx.stroke();
+
+        ctx.fillStyle = textGraph;
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(vVal.toFixed(2) + 'V', x, H - 12);
+      }
+
+      const fSteps = 6;
+      for (let i = 0; i <= fSteps; i++) {
+        const fVal = minY + (i / fSteps) * (maxY - minY);
+        const y = toY(fVal);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + plotW, y);
+        ctx.stroke();
+
+        ctx.fillStyle = textGraph;
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText(fVal.toFixed(2), pad.left - 6, y + 3);
+      }
+      ctx.setLineDash([]);
+
+      // Axis labels
+      ctx.fillStyle = textGraph;
+      ctx.font = '11px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Supply Voltage (VDD_V)', pad.left + plotW / 2, H - 2);
+
+      ctx.save();
+      ctx.translate(12, pad.top + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Frequency (GHz)', 0, 0);
+      ctx.restore();
+
+      const filterVal = filterSelect.value;
+      spatialPoints = [];
+
+      // Filter points based on selected view
+      let visiblePoints = globalPlotData.points;
+      if (filterVal === 'corners') {
+        const highId = globalResults.high_performer ? globalResults.high_performer.die_id : null;
+        const lowId = globalResults.low_performer ? globalResults.low_performer.die_id : null;
+        visiblePoints = globalPlotData.points.filter(p => p.die === highId || p.die === lowId);
+      } else if (filterVal !== 'all') {
+        visiblePoints = globalPlotData.points.filter(p => p.die === filterVal);
+      }
+
+      // Draw Scatter Points
+      const pointSize = visiblePoints.length > 500 ? 5 : 7;
+      visiblePoints.forEach(p => {
+        const cx = toX(p.vdd);
+        const cy = toY(p.freq);
+
+        let color = '#10b981'; // PASS
+        if (p.result !== 'PASS') {
+          if (p.code === 'TIMING' || p.code.includes('FAULT') || p.code.includes('STUCK')) {
+            color = '#f59e0b'; // TIMING / HARD DEFECT
+          } else {
+            color = '#ef4444'; // FREQ_MARGIN
+          }
+        }
+
+        ctx.fillStyle = color;
+        ctx.fillRect(cx - pointSize / 2, cy - pointSize / 2, pointSize, pointSize);
+
+        spatialPoints.push({
+          x: cx, y: cy,
+          vdd: p.vdd, freq: p.freq,
+          result: p.result, code: p.code,
+          die: p.die, pat: p.pat
+        });
+      });
+
+      // Draw Boundary Lines
+      const dieResults = globalResults.die_results || {};
+      const colorsList = ['#38bdf8', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+      if (filterVal === 'all') {
+        let cIdx = 0;
+        for (const [dieId, dInfo] of Object.entries(dieResults)) {
+          ctx.strokeStyle = colorsList[cIdx % colorsList.length];
+          ctx.lineWidth = 1.0;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          const yStart = toY(dInfo.slope * minX + dInfo.intercept);
+          const yEnd = toY(dInfo.slope * maxX + dInfo.intercept);
+          ctx.moveTo(toX(minX), yStart);
+          ctx.lineTo(toX(maxX), yEnd);
+          ctx.stroke();
+          cIdx++;
+        }
+      } else if (filterVal === 'corners') {
+        const high = globalResults.high_performer;
+        const low = globalResults.low_performer;
+        if (high && low) {
+          ctx.fillStyle = 'rgba(37, 99, 235, 0.06)';
+          ctx.beginPath();
+          ctx.moveTo(toX(minX), toY(high.slope * minX + high.intercept));
+          ctx.lineTo(toX(maxX), toY(high.slope * maxX + high.intercept));
+          ctx.lineTo(toX(maxX), toY(low.slope * maxX + low.intercept));
+          ctx.lineTo(toX(minX), toY(low.slope * minX + low.intercept));
+          ctx.closePath();
+          ctx.fill();
+
+          // High boundary line
+          ctx.strokeStyle = '#10b981';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(toX(minX), toY(high.slope * minX + high.intercept));
+          ctx.lineTo(toX(maxX), toY(high.slope * maxX + high.intercept));
+          ctx.stroke();
+
+          // Low boundary line
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(toX(minX), toY(low.slope * minX + low.intercept));
+          ctx.lineTo(toX(maxX), toY(low.slope * maxX + low.intercept));
+          ctx.stroke();
+        }
+      } else {
+        const dInfo = dieResults[filterVal];
+        if (dInfo) {
+          ctx.strokeStyle = '#2563eb';
+          ctx.lineWidth = 2.0;
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          ctx.moveTo(toX(minX), toY(dInfo.slope * minX + dInfo.intercept));
+          ctx.lineTo(toX(maxX), toY(dInfo.slope * maxX + dInfo.intercept));
+          ctx.stroke();
+        }
+      }
+
+      // Draw Main Population Boundary Line
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2.2;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      const popStart = toY(globalResults.boundary_slope * minX + globalResults.boundary_intercept);
+      const popEnd = toY(globalResults.boundary_slope * maxX + globalResults.boundary_intercept);
+      ctx.moveTo(toX(minX), popStart);
+      ctx.lineTo(toX(maxX), popEnd);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw Recommended Operating Point Star & Guardbands
+      const recX = toX(globalResults.recommended_vdd);
+      const recY = toY(globalResults.recommended_freq);
+
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.6)';
+      ctx.lineWidth = 1.0;
+      ctx.setLineDash([2, 3]);
+      ctx.beginPath();
+      ctx.moveTo(recX, pad.top);
+      ctx.lineTo(recX, pad.top + plotH);
+      ctx.moveTo(pad.left, recY);
+      ctx.lineTo(pad.left + plotW, recY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Star shape
+      drawStar(ctx, recX, recY, 5, 8, 4, '#8b5cf6', '#ffffff');
+    }
+
+    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius, fill, stroke) {
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      const step = Math.PI / spikes;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    // ── Interactive Hover Tooltip Event ───────────────────────────────────────
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      let closest = null;
+      let minDistance = 14;
+
+      for (let i = 0; i < spatialPoints.length; i++) {
+        const p = spatialPoints[i];
+        const dist = Math.hypot(p.x - mouseX, p.y - mouseY);
+        if (dist < minDistance) {
+          closest = p;
+          minDistance = dist;
+        }
+      }
+
+      if (closest) {
+        document.getElementById('tt-device').textContent = closest.die || 'Device 1';
+        document.getElementById('tt-vdd').textContent = closest.vdd.toFixed(2) + ' V';
+        document.getElementById('tt-freq').textContent = closest.freq.toFixed(2) + ' GHz';
+
+        const resEl = document.getElementById('tt-result');
+        resEl.textContent = closest.result;
+        resEl.style.color = closest.result === 'PASS' ? '#10b981' : '#ef4444';
+
+        document.getElementById('tt-code').textContent = closest.code;
+
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${mouseX}px`;
+        tooltip.style.top = `${mouseY}px`;
+      } else {
+        tooltip.style.display = 'none';
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+
+    // ── PDF Report Download Trigger ───────────────────────────────────────────
+    document.getElementById('btn-report').addEventListener('click', async () => {
+      if (!currentSessionId) return;
+
+      const mode = document.querySelector('input[name="text-mode"]:checked').value;
+      const btn = document.getElementById('btn-report');
+      const originalText = btn.textContent;
+
+      btn.disabled = true;
+      btn.textContent = 'Generating PDF Report...';
+
+      try {
+        const res = await fetch('/api/report', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-API-Key': 'vannakam-da-mapla'
+          },
+          body: JSON.stringify({
+            session_id: currentSessionId,
+            text_mode: mode,
+            test_methodology: document.getElementById('methodology-select').value
+          })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Report generation failed');
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SHMOO_Executive_Report_${currentSessionId.substring(0, 8)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (err) {
+        alert('Report Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+  </script>
+</body>
+</html>

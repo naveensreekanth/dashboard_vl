@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chip Test Use-Case Cost Diagram</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card-bg: #ffffff;
+    --border: #d8dce3;
+    --ink: #1c2230;
+    --muted: #5b6472;
+    --accent1: #2f6fed;
+    --accent2: #1f9d7c;
+    --accent3: #d9722c;
+    --accent4: #8b5cf6;
+    --cost-bg: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171c;
+      --card-bg: #1c2028;
+      --border: #313742;
+      --ink: #eef0f3;
+      --muted: #98a1af;
+      --cost-bg: #262c36;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 40px 32px 32px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 24px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px 22px;
+    border-top: 4px solid var(--accent-color);
+  }
+  .card:nth-child(1) { --accent-color: var(--accent1); }
+  .card:nth-child(2) { --accent-color: var(--accent2); }
+  .card:nth-child(3) { --accent-color: var(--accent3); }
+  .card:nth-child(4) { --accent-color: var(--accent4); }
+
+  .cost-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    background: var(--cost-bg);
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+  }
+  .cost-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-color);
+  }
+  .cost-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .area-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+  .area-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+  }
+  .footnote {
+    margin-top: 20px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Semiconductor Test Use Cases — Predicted Cost per Device</h1>
+    <p class="subtitle">Four core applications of parametric test data across the device lifecycle</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="cost-pill"><span class="cost-value">$2.50</span><span class="cost-label">/ device</span></div>
+        <p class="area-title">Characterization</p>
+        <p class="area-desc">Understanding the performance limits and operating window of a device.</p>
+      </div>
+
+      <div class="card">
+        <div class="cost-pill"><span class="cost-value">$1.80</span><span class="cost-label">/ device</span></div>
+        <p class="area-title">Yield Analysis</p>
+        <p class="area-desc">Identifying the range of conditions under which a chip functions correctly, helping to optimize manufacturing processes.</p>
+      </div>
+
+      <div class="card">
+        <div class="cost-pill"><span class="cost-value">$4.20</span><span class="cost-label">/ device</span></div>
+        <p class="area-title">Debugging</p>
+        <p class="area-desc">Pinpointing the conditions under which a failure occurs, aiding in root cause analysis.</p>
+      </div>
+
+      <div class="card">
+        <div class="cost-pill"><span class="cost-value">$0.90</span><span class="cost-label">/ device</span></div>
+        <p class="area-title">Binning</p>
+        <p class="area-desc">Classifying chips based on their performance capabilities.</p>
+      </div>
+    </div>
+
+    <p class="footnote">Cost figures shown are illustrative placeholder values only (not real data) — replace with your actual predicted cost-per-device numbers for each use case.</p>
+  </div>
+</body>
+</html>
