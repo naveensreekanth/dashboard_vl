@@ -4,6 +4,7 @@ import subprocess
 import time
 import webbrowser
 import signal
+import socket
 
 # Try to import psutil for cleaner process group killing
 try:
@@ -29,6 +30,16 @@ def cleanup(sig=None, frame=None):
             pass
     print("Cleanup complete. Goodbye!")
     sys.exit(0)
+
+def wait_for_port(port, host="127.0.0.1", timeout=15):
+    start_t = time.time()
+    while time.time() - start_t < timeout:
+        try:
+            with socket.create_connection((host, port), timeout=1):
+                return True
+        except (OSError, ConnectionRefusedError):
+            time.sleep(0.5)
+    return False
 
 # Register cleanup handler for Ctrl+C
 signal.signal(signal.SIGINT, cleanup)
@@ -138,8 +149,9 @@ def main():
         print(f"Failed to start DTL Frontend: {e}")
 
     # Wait for servers to wake up
-    print("\nWarming up servers (6 seconds)...")
-    time.sleep(6)
+    print("\nWarming up servers and checking ports...")
+    wait_for_port(3000, timeout=12)
+    wait_for_port(5174, timeout=15)
 
     # Open the browser to the Central Next.js Dashboard and the DTL Dashboard
     print("\nOpening dashboards in your default browser:")
