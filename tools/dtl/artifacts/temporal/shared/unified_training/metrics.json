@@ -1,0 +1,800 @@
+{
+  "baselines": {
+    "core_ir_drop": {
+      "core_gru_temporal": {
+        "huber_loss": 0.009486640852950068,
+        "mae": 0.11740586066617667,
+        "n_examples": 12000,
+        "n_groups": 600.0,
+        "ndcg_at_k": 0.9999680162744081,
+        "objective_regret": 3.0000000000000395e-06,
+        "pairwise_accuracy": 0.8690614035087719,
+        "rmse": 0.1377435359859044,
+        "spearman": 0.972540969207672,
+        "yield_regret": 0.0
+      },
+      "unified": {
+        "huber_loss": 0.0059280605747133045,
+        "mae": 0.06823422085979133,
+        "n_examples": 12000,
+        "n_groups": 600.0,
+        "ndcg_at_k": 0.9999747914374094,
+        "objective_regret": 0.0,
+        "pairwise_accuracy": 0.8661578947368423,
+        "rmse": 0.10888581702603241,
+        "spearman": 0.9709343741112801,
+        "yield_regret": 0.0
+      }
+    },
+    "core_ir_thermal": {
+      "core_gru_temporal": {
+        "huber_loss": 0.008602920409116253,
+        "mae": 0.10588058565621603,
+        "n_examples": 22200,
+        "n_groups": 1200.0,
+        "ndcg_at_k": 0.9999840081372042,
+        "objective_regret": 1.5000000000000197e-06,
+        "pairwise_accuracy": 0.9014424664602685,
+        "rmse": 0.13117103650666373,
+        "spearman": 0.9812377378585226,
+        "yield_regret": 0.0
+      },
+      "n_examples": 22200,
+      "unified": {
+        "huber_loss": 0.0061228385859215815,
+        "mae": 0.06908254738343514,
+        "n_examples": 22200,
+        "n_groups": 1200.0,
+        "ndcg_at_k": 0.9999801572420407,
+        "objective_regret": 2.666666666666743e-06,
+        "pairwise_accuracy": 0.893078947368421,
+        "rmse": 0.1106601878357486,
+        "spearman": 0.9760559622772242,
+        "yield_regret": 0.0
+      }
+    },
+    "core_thermal": {
+      "core_gru_temporal": {
+        "huber_loss": 0.007563249298723529,
+        "mae": 0.09232143858567406,
+        "n_examples": 10200,
+        "n_groups": 600.0,
+        "ndcg_at_k": 1.0,
+        "objective_regret": 0.0,
+        "pairwise_accuracy": 0.9338235294117648,
+        "rmse": 0.12298983127660212,
+        "spearman": 0.9899345065093734,
+        "yield_regret": 0.0
+      },
+      "unified": {
+        "huber_loss": 0.006351989187343084,
+        "mae": 0.07008057858772197,
+        "n_examples": 10200,
+        "n_groups": 600.0,
+        "ndcg_at_k": 0.999985523046672,
+        "objective_regret": 5.333333333333486e-06,
+        "pairwise_accuracy": 0.92,
+        "rmse": 0.11271192649709333,
+        "spearman": 0.9811775504431682,
+        "yield_regret": 0.0
+      }
+    },
+    "parametric": {
+      "mlp_comparable": false,
+      "note": "ParametricMLPRanker expects Phase-6 condition-grain rows + norm_param_* features from legacy artifacts/ml_dataset; not contract-compatible with temporal unified die\u00d7candidate rows without rebuilding MLP inputs. Unified parametric metrics reported; MLP remains the production parametric scorer.",
+      "unified": {
+        "huber_loss": 0.0036713082060460126,
+        "mae": 0.05702491914397004,
+        "n_examples": 39000,
+        "n_groups": 4200.0,
+        "ndcg_at_k": 0.9986610831251606,
+        "objective_regret": 0.00014114285714285715,
+        "pairwise_accuracy": 0.8800939153439152,
+        "rmse": 0.08568906821813402,
+        "spearman": 0.9094328203792524,
+        "yield_regret": 0.0
+      }
+    }
+  },
+  "best": {
+    "epoch": 1,
+    "val_loss": 0.0046588472983179
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.01627154191333313,
+      "val_loss": 0.0046588472983179
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.008269057247248118,
+      "val_loss": 0.006532513769343495
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.006747776542564537,
+      "val_loss": 0.005769106803927571
+    }
+  ],
+  "hyperparameters": {
+    "batch_size": 512,
+    "huber_delta": 1.0,
+    "lr": 0.0008,
+    "max_epochs": 6,
+    "patience": 2,
+    "seed": 7,
+    "weight_decay": 0.0001
+  },
+  "parameter_vocab": [
+    "ir_drop",
+    "thermal",
+    "VMIN",
+    "VMAX",
+    "IDDQ",
+    "SUPPLY_CURRENT",
+    "CONTACT_RESISTANCE",
+    "INTERCONNECT_RESISTANCE",
+    "ON_RESISTANCE"
+  ],
+  "ranking_sanity": [
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_EDGE_003_D045",
+        "lot_id": "DTL_EDGE_003",
+        "parameter": "IDDQ",
+        "production_month": "2026-03"
+      },
+      "pred_std": 0.28334169528511216,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 100.0,
+          "pred_unified": 0.8056899309158325,
+          "predicted_rank": 1,
+          "target_score": 0.9066
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 80.0,
+          "pred_unified": 0.5964124798774719,
+          "predicted_rank": 2,
+          "target_score": 0.3908
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 70.0,
+          "pred_unified": 0.39517858624458313,
+          "predicted_rank": 3,
+          "target_score": 0.1103999999999999
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 60.0,
+          "pred_unified": 0.08086457848548889,
+          "predicted_rank": 4,
+          "target_score": 0.0067999999999999
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 55.0,
+          "pred_unified": 0.012234747409820557,
+          "predicted_rank": 6,
+          "target_score": 0.0003999999999999
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 30.0,
+          "pred_unified": 0.00706055760383606,
+          "predicted_rank": 7,
+          "target_score": 0.0
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 45.0,
+          "pred_unified": -0.003347836434841156,
+          "predicted_rank": 10,
+          "target_score": 0.0
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 50.0,
+          "pred_unified": 0.013635162264108658,
+          "predicted_rank": 5,
+          "target_score": 0.0
+        }
+      ]
+    },
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_CENTER_001_D012",
+        "lot_id": "DTL_CENTER_001",
+        "parameter": "VMAX",
+        "production_month": "2026-02"
+      },
+      "pred_std": 0.06311010223394903,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 1.05,
+          "pred_unified": 0.14113956689834595,
+          "predicted_rank": 1,
+          "target_score": 0.2424
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 1.08,
+          "pred_unified": 0.12875205278396606,
+          "predicted_rank": 2,
+          "target_score": 0.1077999999999999
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 1.1,
+          "pred_unified": 0.11460960656404495,
+          "predicted_rank": 3,
+          "target_score": 0.0508
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 1.12,
+          "pred_unified": 0.09305897355079651,
+          "predicted_rank": 4,
+          "target_score": 0.0235999999999999
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 1.15,
+          "pred_unified": 0.008008327335119247,
+          "predicted_rank": 6,
+          "target_score": 0.0046
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 1.18,
+          "pred_unified": 0.009739130735397339,
+          "predicted_rank": 5,
+          "target_score": -0.00275
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 1.22,
+          "pred_unified": -0.012016363441944122,
+          "predicted_rank": 8,
+          "target_score": -0.00345
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 1.25,
+          "pred_unified": -0.02375856414437294,
+          "predicted_rank": 9,
+          "target_score": -0.00345
+        }
+      ]
+    },
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_CENTER_001_D006",
+        "lot_id": "DTL_CENTER_001",
+        "parameter": "VMIN",
+        "production_month": "2026-03"
+      },
+      "pred_std": 0.13042854638571721,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 1.0,
+          "pred_unified": 0.42480406165122986,
+          "predicted_rank": 1,
+          "target_score": 0.2556
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 0.95,
+          "pred_unified": 0.20846930146217346,
+          "predicted_rank": 2,
+          "target_score": 0.0622
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 0.92,
+          "pred_unified": 0.08436938375234604,
+          "predicted_rank": 3,
+          "target_score": 0.0179999999999999
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 0.9,
+          "pred_unified": 0.026031268760561943,
+          "predicted_rank": 4,
+          "target_score": 0.0049999999999999
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 0.88,
+          "pred_unified": -0.00954156368970871,
+          "predicted_rank": 10,
+          "target_score": 0.0015999999999999
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 0.8,
+          "pred_unified": 0.010438792407512665,
+          "predicted_rank": 7,
+          "target_score": 0.0
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 0.85,
+          "pred_unified": -0.0006851851940155029,
+          "predicted_rank": 9,
+          "target_score": 0.0
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 0.82,
+          "pred_unified": 0.008199997246265411,
+          "predicted_rank": 8,
+          "target_score": 0.0
+        }
+      ]
+    },
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_SCRATCH_005_D020",
+        "lot_id": "DTL_SCRATCH_005",
+        "parameter": "ON_RESISTANCE",
+        "production_month": "2026-03"
+      },
+      "pred_std": 0.38252794480944896,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 50.0,
+          "pred_unified": 0.9352023005485535,
+          "predicted_rank": 1,
+          "target_score": 0.9992
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 40.0,
+          "pred_unified": 0.8904953002929688,
+          "predicted_rank": 2,
+          "target_score": 0.9422
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 35.0,
+          "pred_unified": 0.8059275150299072,
+          "predicted_rank": 3,
+          "target_score": 0.763
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 30.0,
+          "pred_unified": 0.4658859968185425,
+          "predicted_rank": 4,
+          "target_score": 0.268
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 28.0,
+          "pred_unified": 0.30571338534355164,
+          "predicted_rank": 5,
+          "target_score": 0.1088
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 25.0,
+          "pred_unified": 0.08277198672294617,
+          "predicted_rank": 6,
+          "target_score": 0.0082
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 20.0,
+          "pred_unified": -0.01400117576122284,
+          "predicted_rank": 8,
+          "target_score": -0.00315
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 18.0,
+          "pred_unified": -0.011835776269435883,
+          "predicted_rank": 7,
+          "target_score": -0.00315
+        }
+      ]
+    },
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_CENTER_001_D045",
+        "lot_id": "DTL_CENTER_001",
+        "parameter": "INTERCONNECT_RESISTANCE",
+        "production_month": "2026-03"
+      },
+      "pred_std": 0.31811809703167554,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 25.0,
+          "pred_unified": 0.8809935450553894,
+          "predicted_rank": 1,
+          "target_score": 0.9326
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 20.0,
+          "pred_unified": 0.6631903052330017,
+          "predicted_rank": 2,
+          "target_score": 0.4886
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 18.0,
+          "pred_unified": 0.4470219016075134,
+          "predicted_rank": 3,
+          "target_score": 0.2292
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 16.0,
+          "pred_unified": 0.19358009099960327,
+          "predicted_rank": 4,
+          "target_score": 0.0446
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 15.0,
+          "pred_unified": 0.09518503397703171,
+          "predicted_rank": 5,
+          "target_score": 0.0118
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 14.0,
+          "pred_unified": -0.010849278420209885,
+          "predicted_rank": 6,
+          "target_score": -0.0006999999999999
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 13.0,
+          "pred_unified": -0.014022570103406906,
+          "predicted_rank": 9,
+          "target_score": -0.0036999999999999
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 12.0,
+          "pred_unified": -0.013876698911190033,
+          "predicted_rank": 8,
+          "target_score": -0.00405
+        }
+      ]
+    },
+    {
+      "constant": false,
+      "key": {
+        "die_id": "DTL_SCRATCH_005_D005",
+        "lot_id": "DTL_SCRATCH_005",
+        "parameter": "VMAX",
+        "production_month": "2026-02"
+      },
+      "pred_std": 0.06737872380780541,
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 1.05,
+          "pred_unified": 0.15538880228996277,
+          "predicted_rank": 1,
+          "target_score": 0.2424
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 1.08,
+          "pred_unified": 0.14038656651973724,
+          "predicted_rank": 2,
+          "target_score": 0.1077999999999999
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 1.1,
+          "pred_unified": 0.12218048423528671,
+          "predicted_rank": 3,
+          "target_score": 0.0508
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 1.12,
+          "pred_unified": 0.10217045992612839,
+          "predicted_rank": 4,
+          "target_score": 0.0235999999999999
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 1.15,
+          "pred_unified": 0.013954110443592072,
+          "predicted_rank": 5,
+          "target_score": 0.0046
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 1.18,
+          "pred_unified": 0.009493574500083923,
+          "predicted_rank": 6,
+          "target_score": -0.00275
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 1.2,
+          "pred_unified": -0.000445585697889328,
+          "predicted_rank": 7,
+          "target_score": -0.00345
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 1.25,
+          "pred_unified": -0.020400062203407288,
+          "predicted_rank": 9,
+          "target_score": -0.00345
+        }
+      ]
+    }
+  ],
+  "temporal_examples": [
+    {
+      "parameter": "ir_drop",
+      "sequence_id": "2026-01::DTL_CENTER_001::DTL_CENTER_001_D001",
+      "top3": [
+        {
+          "candidate_limit": 55.0,
+          "pred_unified": 1.0054482221603394,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 60.0,
+          "pred_unified": 1.0034226179122925,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 50.0,
+          "pred_unified": 1.002700924873352,
+          "target_score": 1.0
+        }
+      ]
+    },
+    {
+      "parameter": "ir_drop",
+      "sequence_id": "2026-02::DTL_CENTER_001::DTL_CENTER_001_D001",
+      "top3": [
+        {
+          "candidate_limit": 60.0,
+          "pred_unified": 0.9897400140762329,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 55.0,
+          "pred_unified": 0.9891891479492188,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 65.0,
+          "pred_unified": 0.9850196242332458,
+          "target_score": 1.0
+        }
+      ]
+    },
+    {
+      "parameter": "ir_drop",
+      "sequence_id": "2026-03::DTL_CENTER_001::DTL_CENTER_001_D001",
+      "top3": [
+        {
+          "candidate_limit": 55.0,
+          "pred_unified": 0.9860748052597046,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 60.0,
+          "pred_unified": 0.985621452331543,
+          "target_score": 1.0
+        },
+        {
+          "candidate_limit": 50.0,
+          "pred_unified": 0.9826293587684631,
+          "target_score": 1.0
+        }
+      ]
+    }
+  ],
+  "test": {
+    "huber_loss": 0.004560588834040091,
+    "mae": 0.06139876468181523,
+    "n_examples": 61200,
+    "n_groups": 5400.0,
+    "ndcg_at_k": 0.9989542107066897,
+    "objective_regret": 0.00011037037037037039,
+    "pairwise_accuracy": 0.8829794780160278,
+    "rmse": 0.09550485677744448,
+    "spearman": 0.924237963023246,
+    "yield_regret": 0.0
+  },
+  "test_by_month": {
+    "2026-01": {
+      "huber_loss": 0.00462742540243511,
+      "mae": 0.0670166437940279,
+      "n_examples": 20400,
+      "n_groups": 1800.0,
+      "ndcg_at_k": 0.999038538620876,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.9061301408477621,
+      "rmse": 0.09620213513675369,
+      "spearman": 0.9366030073925389,
+      "yield_regret": 0.0
+    },
+    "2026-02": {
+      "huber_loss": 0.002666822959326528,
+      "mae": 0.04593537633991899,
+      "n_examples": 20400,
+      "n_groups": 1800.0,
+      "ndcg_at_k": 0.9986311704412236,
+      "objective_regret": 0.00022433333333333352,
+      "pairwise_accuracy": 0.8850610738447425,
+      "rmse": 0.07303181442804949,
+      "spearman": 0.9198881755275533,
+      "yield_regret": 0.0
+    },
+    "2026-03": {
+      "huber_loss": 0.006387518140358637,
+      "mae": 0.0712442739114988,
+      "n_examples": 20400,
+      "n_groups": 1800.0,
+      "ndcg_at_k": 0.9991929230579689,
+      "objective_regret": 0.00010677777777777767,
+      "pairwise_accuracy": 0.8577472193555784,
+      "rmse": 0.11302670605090319,
+      "spearman": 0.9162227061496463,
+      "yield_regret": 0.0
+    }
+  },
+  "test_by_parameter": {
+    "CONTACT_RESISTANCE": {
+      "huber_loss": 0.004250755959214382,
+      "mae": 0.0657404593179524,
+      "n_examples": 5400,
+      "n_groups": 600.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.9275,
+      "rmse": 0.0922036437372665,
+      "spearman": 0.9413333333333332,
+      "yield_regret": 0.0
+    },
+    "IDDQ": {
+      "huber_loss": 0.004650404021740384,
+      "mae": 0.059586074184193726,
+      "n_examples": 6000,
+      "n_groups": 600.0,
+      "ndcg_at_k": 0.9991890190761761,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.7922592592592592,
+      "rmse": 0.09644069702921464,
+      "spearman": 0.8431181607937817,
+      "yield_regret": 0.0
+    },
+    "INTERCONNECT_RESISTANCE": {
+      "huber_loss": 0.004706470452369653,
+      "mae": 0.06890097779745359,
+      "n_examples": 5400,
+      "n_groups": 600.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.9439814814814815,
+      "rmse": 0.09702031181530651,
+      "spearman": 0.9529656474395305,
+      "yield_regret": 0.0
+    },
+    "ON_RESISTANCE": {
+      "huber_loss": 0.004118317873505791,
+      "mae": 0.06573031590816598,
+      "n_examples": 5400,
+      "n_groups": 600.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.9146296296296297,
+      "rmse": 0.09075591301403772,
+      "spearman": 0.9541197627354056,
+      "yield_regret": 0.0
+    },
+    "SUPPLY_CURRENT": {
+      "huber_loss": 0.0031925728013942464,
+      "mae": 0.051696381581522816,
+      "n_examples": 5400,
+      "n_groups": 600.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.9266203703703703,
+      "rmse": 0.0799071060844309,
+      "spearman": 0.9499854530481078,
+      "yield_regret": 0.0
+    },
+    "VMAX": {
+      "huber_loss": 0.0021745204752780297,
+      "mae": 0.04091996532713596,
+      "n_examples": 5400,
+      "n_groups": 600.0,
+      "ndcg_at_k": 0.9976585681773625,
+      "objective_regret": 0.000988,
+      "pairwise_accuracy": 0.9107407407407407,
+      "rmse": 0.06594725885551317,
+      "spearman": 0.9743379545311729,
+      "yield_regret": 0.0
+    },
+    "VMIN": {
+      "huber_loss": 0.002614725511972805,
+      "mae": 0.04738661031260392,
+      "n_examples": 6000,
+      "n_groups": 600.0,
+      "ndcg_at_k": 0.9937799946225857,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.7449259259259259,
+      "rmse": 0.0723149432962898,
+      "spearman": 0.7501694307734356,
+      "yield_regret": 0.0
+    },
+    "ir_drop": {
+      "huber_loss": 0.0059280605747133045,
+      "mae": 0.06823422085979133,
+      "n_examples": 12000,
+      "n_groups": 600.0,
+      "ndcg_at_k": 0.9999747914374094,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.8661578947368423,
+      "rmse": 0.10888581702603241,
+      "spearman": 0.9709343741112801,
+      "yield_regret": 0.0
+    },
+    "thermal": {
+      "huber_loss": 0.006351989187343084,
+      "mae": 0.07008057858772197,
+      "n_examples": 10200,
+      "n_groups": 600.0,
+      "ndcg_at_k": 0.999985523046672,
+      "objective_regret": 5.333333333333486e-06,
+      "pairwise_accuracy": 0.92,
+      "rmse": 0.11271192649709333,
+      "spearman": 0.9811775504431682,
+      "yield_regret": 0.0
+    }
+  },
+  "train": {
+    "huber_loss": 0.004590189189980816,
+    "mae": 0.061676992880381885,
+    "n_examples": 183600,
+    "n_groups": 16200.0,
+    "ndcg_at_k": 0.9988629189955612,
+    "objective_regret": 0.00014207407407407406,
+    "pairwise_accuracy": 0.8827570291166066,
+    "rmse": 0.09581429110504149,
+    "spearman": 0.9240315997772471,
+    "yield_regret": 0.0
+  },
+  "validation": {
+    "huber_loss": 0.004659830096163492,
+    "mae": 0.0618241724564327,
+    "n_examples": 61200,
+    "n_groups": 5400.0,
+    "ndcg_at_k": 0.9989067781284745,
+    "objective_regret": 0.00015862962962962963,
+    "pairwise_accuracy": 0.8837721687115392,
+    "rmse": 0.09653838714380401,
+    "spearman": 0.9257623559232311,
+    "yield_regret": 0.0
+  },
+  "wired_into_recommend": false
+}

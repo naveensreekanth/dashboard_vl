@@ -1,0 +1,9 @@
+{
+  "checkpoint_sha256": "51feaca6d2dff62d248b7c4c84ece6953949da7e7aa5ab9698531a9dc1091278",
+  "dataset_manifest_hash": "e5fe133ead503015a56023e202b2fa7ec7a226f971e267436e3798d4db97579d",
+  "legacy_checkpoint_sha256_after": "6040ab39d61b026565a6ead5e783047049d2e4b27bfdc0df6b19148dadc49a86",
+  "legacy_checkpoint_sha256_before": "6040ab39d61b026565a6ead5e783047049d2e4b27bfdc0df6b19148dadc49a86",
+  "split_seed": 12042026,
+  "train_parquet_hash": "c386e0d1c5dbb6dcae2eacb6bd6306c73f33223ae9b237b602f58419ac73d64c",
+  "training_seed": 7
+}

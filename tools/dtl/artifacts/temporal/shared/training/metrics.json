@@ -1,0 +1,1031 @@
+{
+  "best_checkpoint": {
+    "best_epoch": 3,
+    "best_val_loss": 0.00865180977747183,
+    "path": "C:\\Users\\Keerthan\\OneDrive\\Desktop\\dtl agent\\artifacts\\temporal\\shared\\checkpoints\\core_gru_temporal_v1.pt"
+  },
+  "dataset": {
+    "n_test": 22200,
+    "n_train": 66600,
+    "n_validation": 22200,
+    "root": "C:\\Users\\Keerthan\\OneDrive\\Desktop\\dtl agent\\artifacts\\temporal\\shared\\ml_dataset",
+    "version": "phase12_4_temporal_core_v1"
+  },
+  "hyperparameters": {
+    "batch_size": 512,
+    "huber_delta": 1.0,
+    "lr": 0.0008,
+    "max_epochs": 6,
+    "patience": 2,
+    "seed": 7,
+    "weight_decay": 0.0001
+  },
+  "legacy_comparison": {
+    "compatible": true,
+    "legacy_best": {
+      "epoch": 2,
+      "val_loss": 0.003619512339355424
+    },
+    "legacy_checkpoint": "C:\\Users\\Keerthan\\OneDrive\\Desktop\\dtl agent\\artifacts\\ml\\checkpoints\\core_gru_best.pt",
+    "reason": "Same CoreGRURanker I/O contract; sequences are month-prefixed at the store but the model does not consume production_month. Evaluation is informative but the legacy model was trained on a different population (legacy data/core).",
+    "test_metrics": {
+      "huber_loss": 0.012397179380059242,
+      "mae": 0.11868634415247446,
+      "n_groups": 400.0,
+      "ndcg_at_k": 0.999988887643704,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.8513957460950483,
+      "rmse": 0.1574622417754796,
+      "spearman": 0.9575715002869845,
+      "yield_regret": 0.0
+    }
+  },
+  "normalization": {
+    "candidate_numeric": "none (raw CORE_CAND_NUM \u2014 same as Phase 7)",
+    "note": "Phase 12.4 wrote train-only z-score stats for cand fields under normalization/normalization_stats.json for reproducibility, but Phase 7 CoreGRURanker training does not apply them; Phase 12.5 preserves that behavior.",
+    "sequence": "none (raw measurements \u2014 same as Phase 7 Core GRU)",
+    "stats_path": "C:\\Users\\Keerthan\\OneDrive\\Desktop\\dtl agent\\artifacts\\temporal\\shared\\ml_dataset\\normalization\\normalization_stats.json",
+    "target": "raw target_score / objective_score (no z-score)"
+  },
+  "ranking_sanity": [
+    {
+      "constant_score": false,
+      "die_id": "DTL_EDGE_003_D014",
+      "lot_id": "DTL_EDGE_003",
+      "n_candidates": 17,
+      "parameter": "thermal",
+      "pred_score_std": 0.38134547543207425,
+      "production_month": "2026-01",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 90.0,
+          "predicted_ml_score": 0.9328432083129883,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 75.0,
+          "predicted_ml_score": 0.8879687786102295,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 80.0,
+          "predicted_ml_score": 0.909559965133667,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 92.0,
+          "predicted_ml_score": 0.935520589351654,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 85.0,
+          "predicted_ml_score": 0.923576831817627,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8573296666145325,
+          "predicted_rank": 6,
+          "target_score": 0.9928
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.7954946756362915,
+          "predicted_rank": 7,
+          "target_score": 0.9308
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 64.0,
+          "predicted_ml_score": 0.7659945487976074,
+          "predicted_rank": 8,
+          "target_score": 0.8828
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 63.0,
+          "predicted_ml_score": 0.6962829232215881,
+          "predicted_rank": 9,
+          "target_score": 0.8144
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 62.0,
+          "predicted_ml_score": 0.5971120595932007,
+          "predicted_rank": 10,
+          "target_score": 0.7048
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 61.0,
+          "predicted_ml_score": 0.4798482656478882,
+          "predicted_rank": 11,
+          "target_score": 0.5684
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.24766093492507935,
+          "predicted_rank": 12,
+          "target_score": 0.4158
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 58.0,
+          "predicted_ml_score": 0.06979130208492279,
+          "predicted_rank": 13,
+          "target_score": 0.1562499999999999
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 56.0,
+          "predicted_ml_score": 0.022757122293114662,
+          "predicted_rank": 14,
+          "target_score": 0.0008
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 54.0,
+          "predicted_ml_score": -0.004040464758872986,
+          "predicted_rank": 15,
+          "target_score": -0.05255
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 52.0,
+          "predicted_ml_score": -0.0189987700432539,
+          "predicted_rank": 16,
+          "target_score": -0.0610999999999999
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": -0.031401216983795166,
+          "predicted_rank": 17,
+          "target_score": -0.0617999999999999
+        }
+      ]
+    },
+    {
+      "constant_score": false,
+      "die_id": "DTL_EDGE_003_D006",
+      "lot_id": "DTL_EDGE_003",
+      "n_candidates": 17,
+      "parameter": "thermal",
+      "pred_score_std": 0.3756445464436363,
+      "production_month": "2026-01",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 75.0,
+          "predicted_ml_score": 0.8635312914848328,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 85.0,
+          "predicted_ml_score": 0.9017442464828491,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 92.0,
+          "predicted_ml_score": 0.9152197241783142,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 90.0,
+          "predicted_ml_score": 0.9121241569519043,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 80.0,
+          "predicted_ml_score": 0.8862142562866211,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8321911096572876,
+          "predicted_rank": 6,
+          "target_score": 0.9928
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.6780408620834351,
+          "predicted_rank": 7,
+          "target_score": 0.9308
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 64.0,
+          "predicted_ml_score": 0.5926775336265564,
+          "predicted_rank": 8,
+          "target_score": 0.8828
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 63.0,
+          "predicted_ml_score": 0.483148455619812,
+          "predicted_rank": 9,
+          "target_score": 0.8144
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 62.0,
+          "predicted_ml_score": 0.37232398986816406,
+          "predicted_rank": 10,
+          "target_score": 0.7048
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 61.0,
+          "predicted_ml_score": 0.2793225049972534,
+          "predicted_rank": 11,
+          "target_score": 0.5684
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.13351449370384216,
+          "predicted_rank": 12,
+          "target_score": 0.4158
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 58.0,
+          "predicted_ml_score": 0.03310480713844299,
+          "predicted_rank": 13,
+          "target_score": 0.1562499999999999
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 56.0,
+          "predicted_ml_score": 0.004975782707333565,
+          "predicted_rank": 14,
+          "target_score": 0.0008
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 54.0,
+          "predicted_ml_score": -0.01562531106173992,
+          "predicted_rank": 15,
+          "target_score": -0.05255
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 52.0,
+          "predicted_ml_score": -0.02892235852777958,
+          "predicted_rank": 16,
+          "target_score": -0.0610999999999999
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": -0.03182944655418396,
+          "predicted_rank": 17,
+          "target_score": -0.0617999999999999
+        }
+      ]
+    },
+    {
+      "constant_score": false,
+      "die_id": "DTL_EDGE_003_D040",
+      "lot_id": "DTL_EDGE_003",
+      "n_candidates": 20,
+      "parameter": "ir_drop",
+      "pred_score_std": 0.35711285304580354,
+      "production_month": "2026-02",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8365420699119568,
+          "predicted_rank": 6,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 40.0,
+          "predicted_ml_score": 0.8337973356246948,
+          "predicted_rank": 8,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 72.0,
+          "predicted_ml_score": 0.8364906907081604,
+          "predicted_rank": 7,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.8368989825248718,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 45.0,
+          "predicted_ml_score": 0.8387038707733154,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": 0.8402997255325317,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.8383703827857971,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 55.0,
+          "predicted_ml_score": 0.8397454023361206,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 35.0,
+          "predicted_ml_score": 0.8092011213302612,
+          "predicted_rank": 9,
+          "target_score": 0.9838
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 30.0,
+          "predicted_ml_score": 0.6866343021392822,
+          "predicted_rank": 10,
+          "target_score": 0.77
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 29.0,
+          "predicted_ml_score": 0.61553955078125,
+          "predicted_rank": 11,
+          "target_score": 0.643
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 28.0,
+          "predicted_ml_score": 0.49626845121383667,
+          "predicted_rank": 12,
+          "target_score": 0.479
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 27.0,
+          "predicted_ml_score": 0.38896694779396057,
+          "predicted_rank": 13,
+          "target_score": 0.3206
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 26.0,
+          "predicted_ml_score": 0.29310864210128784,
+          "predicted_rank": 14,
+          "target_score": 0.1854
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 25.0,
+          "predicted_ml_score": 0.16100706160068512,
+          "predicted_rank": 15,
+          "target_score": 0.0919999999999999
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 24.0,
+          "predicted_ml_score": 0.03529174625873566,
+          "predicted_rank": 16,
+          "target_score": 0.0188499999999999
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 23.0,
+          "predicted_ml_score": -0.004653094336390495,
+          "predicted_rank": 17,
+          "target_score": -0.00905
+        },
+        {
+          "actual_rank": 18,
+          "candidate_limit": 22.0,
+          "predicted_ml_score": -0.022957177832722664,
+          "predicted_rank": 18,
+          "target_score": -0.0201
+        },
+        {
+          "actual_rank": 19,
+          "candidate_limit": 21.0,
+          "predicted_ml_score": -0.03666621819138527,
+          "predicted_rank": 19,
+          "target_score": -0.023
+        },
+        {
+          "actual_rank": 20,
+          "candidate_limit": 20.0,
+          "predicted_ml_score": -0.04138229042291641,
+          "predicted_rank": 20,
+          "target_score": -0.0237
+        }
+      ]
+    },
+    {
+      "constant_score": false,
+      "die_id": "DTL_EDGE_003_D001",
+      "lot_id": "DTL_EDGE_003",
+      "n_candidates": 17,
+      "parameter": "thermal",
+      "pred_score_std": 0.38141007730265547,
+      "production_month": "2026-02",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 92.0,
+          "predicted_ml_score": 0.9373114109039307,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 80.0,
+          "predicted_ml_score": 0.9115757942199707,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 85.0,
+          "predicted_ml_score": 0.9255001544952393,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 90.0,
+          "predicted_ml_score": 0.9347895383834839,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 75.0,
+          "predicted_ml_score": 0.8901180624961853,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8596115112304688,
+          "predicted_rank": 6,
+          "target_score": 0.977
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.798795223236084,
+          "predicted_rank": 7,
+          "target_score": 0.7933999999999999
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 64.0,
+          "predicted_ml_score": 0.7710613012313843,
+          "predicted_rank": 8,
+          "target_score": 0.6798
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 63.0,
+          "predicted_ml_score": 0.7093085646629333,
+          "predicted_rank": 9,
+          "target_score": 0.5553999999999999
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 62.0,
+          "predicted_ml_score": 0.6171085834503174,
+          "predicted_rank": 10,
+          "target_score": 0.4244
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 61.0,
+          "predicted_ml_score": 0.5014938712120056,
+          "predicted_rank": 11,
+          "target_score": 0.286
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.26238441467285156,
+          "predicted_rank": 12,
+          "target_score": 0.1802
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 58.0,
+          "predicted_ml_score": 0.07450683414936066,
+          "predicted_rank": 13,
+          "target_score": 0.0395
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 56.0,
+          "predicted_ml_score": 0.0250678863376379,
+          "predicted_rank": 14,
+          "target_score": -0.01165
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 54.0,
+          "predicted_ml_score": -0.002984326332807541,
+          "predicted_rank": 15,
+          "target_score": -0.02265
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 52.0,
+          "predicted_ml_score": -0.01826954446732998,
+          "predicted_rank": 16,
+          "target_score": -0.0237
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": -0.03102567233145237,
+          "predicted_rank": 17,
+          "target_score": -0.0237
+        }
+      ]
+    },
+    {
+      "constant_score": false,
+      "die_id": "DTL_CENTER_001_D035",
+      "lot_id": "DTL_CENTER_001",
+      "n_candidates": 20,
+      "parameter": "ir_drop",
+      "pred_score_std": 0.3614215164895223,
+      "production_month": "2026-03",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8293706774711609,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.8298187255859375,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 72.0,
+          "predicted_ml_score": 0.829585075378418,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 55.0,
+          "predicted_ml_score": 0.8298943638801575,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": 0.8285380601882935,
+          "predicted_rank": 6,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.829372227191925,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 45.0,
+          "predicted_ml_score": 0.8242580890655518,
+          "predicted_rank": 7,
+          "target_score": 0.9982
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 40.0,
+          "predicted_ml_score": 0.814089298248291,
+          "predicted_rank": 8,
+          "target_score": 0.9896
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 35.0,
+          "predicted_ml_score": 0.7829167246818542,
+          "predicted_rank": 9,
+          "target_score": 0.9116
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 30.0,
+          "predicted_ml_score": 0.5826155543327332,
+          "predicted_rank": 10,
+          "target_score": 0.5466
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 29.0,
+          "predicted_ml_score": 0.47156545519828796,
+          "predicted_rank": 11,
+          "target_score": 0.3833999999999999
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 28.0,
+          "predicted_ml_score": 0.37223944067955017,
+          "predicted_rank": 12,
+          "target_score": 0.2331999999999999
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 27.0,
+          "predicted_ml_score": 0.2830045521259308,
+          "predicted_rank": 13,
+          "target_score": 0.1225999999999999
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 26.0,
+          "predicted_ml_score": 0.19390958547592163,
+          "predicted_rank": 14,
+          "target_score": 0.0478
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 25.0,
+          "predicted_ml_score": 0.09876120835542679,
+          "predicted_rank": 15,
+          "target_score": 0.0113999999999999
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 24.0,
+          "predicted_ml_score": 0.0005707871168851852,
+          "predicted_rank": 16,
+          "target_score": -0.002
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 23.0,
+          "predicted_ml_score": -0.01868724264204502,
+          "predicted_rank": 17,
+          "target_score": -0.00415
+        },
+        {
+          "actual_rank": 18,
+          "candidate_limit": 21.0,
+          "predicted_ml_score": -0.037699878215789795,
+          "predicted_rank": 19,
+          "target_score": -0.00435
+        },
+        {
+          "actual_rank": 19,
+          "candidate_limit": 22.0,
+          "predicted_ml_score": -0.02972174435853958,
+          "predicted_rank": 18,
+          "target_score": -0.00435
+        },
+        {
+          "actual_rank": 20,
+          "candidate_limit": 20.0,
+          "predicted_ml_score": -0.03834220767021179,
+          "predicted_rank": 20,
+          "target_score": -0.00435
+        }
+      ]
+    },
+    {
+      "constant_score": false,
+      "die_id": "DTL_CENTER_001_D044",
+      "lot_id": "DTL_CENTER_001",
+      "n_candidates": 20,
+      "parameter": "ir_drop",
+      "pred_score_std": 0.35875256314935416,
+      "production_month": "2026-03",
+      "rows": [
+        {
+          "actual_rank": 1,
+          "candidate_limit": 55.0,
+          "predicted_ml_score": 0.8364003896713257,
+          "predicted_rank": 1,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 2,
+          "candidate_limit": 65.0,
+          "predicted_ml_score": 0.8345559239387512,
+          "predicted_rank": 4,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 3,
+          "candidate_limit": 50.0,
+          "predicted_ml_score": 0.8363394737243652,
+          "predicted_rank": 2,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 4,
+          "candidate_limit": 72.0,
+          "predicted_ml_score": 0.8340951800346375,
+          "predicted_rank": 6,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 5,
+          "candidate_limit": 60.0,
+          "predicted_ml_score": 0.8354883790016174,
+          "predicted_rank": 3,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 6,
+          "candidate_limit": 70.0,
+          "predicted_ml_score": 0.8341406583786011,
+          "predicted_rank": 5,
+          "target_score": 1.0
+        },
+        {
+          "actual_rank": 7,
+          "candidate_limit": 45.0,
+          "predicted_ml_score": 0.8339933156967163,
+          "predicted_rank": 7,
+          "target_score": 0.9982
+        },
+        {
+          "actual_rank": 8,
+          "candidate_limit": 40.0,
+          "predicted_ml_score": 0.8266149759292603,
+          "predicted_rank": 8,
+          "target_score": 0.9896
+        },
+        {
+          "actual_rank": 9,
+          "candidate_limit": 35.0,
+          "predicted_ml_score": 0.7999892830848694,
+          "predicted_rank": 9,
+          "target_score": 0.9116
+        },
+        {
+          "actual_rank": 10,
+          "candidate_limit": 30.0,
+          "predicted_ml_score": 0.6602942943572998,
+          "predicted_rank": 10,
+          "target_score": 0.5466
+        },
+        {
+          "actual_rank": 11,
+          "candidate_limit": 29.0,
+          "predicted_ml_score": 0.577558696269989,
+          "predicted_rank": 11,
+          "target_score": 0.3833999999999999
+        },
+        {
+          "actual_rank": 12,
+          "candidate_limit": 28.0,
+          "predicted_ml_score": 0.4544484317302704,
+          "predicted_rank": 12,
+          "target_score": 0.2331999999999999
+        },
+        {
+          "actual_rank": 13,
+          "candidate_limit": 27.0,
+          "predicted_ml_score": 0.3544105291366577,
+          "predicted_rank": 13,
+          "target_score": 0.1225999999999999
+        },
+        {
+          "actual_rank": 14,
+          "candidate_limit": 26.0,
+          "predicted_ml_score": 0.2533995509147644,
+          "predicted_rank": 14,
+          "target_score": 0.0478
+        },
+        {
+          "actual_rank": 15,
+          "candidate_limit": 25.0,
+          "predicted_ml_score": 0.1405976563692093,
+          "predicted_rank": 15,
+          "target_score": 0.0113999999999999
+        },
+        {
+          "actual_rank": 16,
+          "candidate_limit": 24.0,
+          "predicted_ml_score": 0.021701892837882042,
+          "predicted_rank": 16,
+          "target_score": -0.002
+        },
+        {
+          "actual_rank": 17,
+          "candidate_limit": 23.0,
+          "predicted_ml_score": -0.010218070819973946,
+          "predicted_rank": 17,
+          "target_score": -0.00415
+        },
+        {
+          "actual_rank": 18,
+          "candidate_limit": 22.0,
+          "predicted_ml_score": -0.026337334886193275,
+          "predicted_rank": 18,
+          "target_score": -0.00435
+        },
+        {
+          "actual_rank": 19,
+          "candidate_limit": 20.0,
+          "predicted_ml_score": -0.0408763661980629,
+          "predicted_rank": 20,
+          "target_score": -0.00435
+        },
+        {
+          "actual_rank": 20,
+          "candidate_limit": 21.0,
+          "predicted_ml_score": -0.038354676216840744,
+          "predicted_rank": 19,
+          "target_score": -0.00435
+        }
+      ]
+    }
+  ],
+  "split": {
+    "counts": {
+      "test": 4,
+      "train": 12,
+      "validation": 4
+    },
+    "disjoint": true,
+    "split_seed_expected": 12042026,
+    "test_lots": [
+      "DTL_CENTER_001",
+      "DTL_EDGE_003",
+      "DTL_NORM_003",
+      "DTL_SCRATCH_005"
+    ],
+    "train_lots": [
+      "DTL_CENTER_002",
+      "DTL_CENTER_004",
+      "DTL_CENTER_005",
+      "DTL_EDGE_002",
+      "DTL_EDGE_004",
+      "DTL_EDGE_005",
+      "DTL_NORM_001",
+      "DTL_NORM_002",
+      "DTL_NORM_004",
+      "DTL_SCRATCH_001",
+      "DTL_SCRATCH_003",
+      "DTL_SCRATCH_004"
+    ],
+    "validation_lots": [
+      "DTL_CENTER_003",
+      "DTL_EDGE_001",
+      "DTL_NORM_005",
+      "DTL_SCRATCH_002"
+    ]
+  },
+  "test": {
+    "huber_loss": 0.008602919988334179,
+    "mae": 0.10588058560528694,
+    "n_examples": 22200,
+    "n_groups": 400.0,
+    "ndcg_at_k": 1.0,
+    "objective_regret": 0.0,
+    "pairwise_accuracy": 0.8683112662013958,
+    "rmse": 0.13117103641375455,
+    "spearman": 0.9707901048213976,
+    "yield_regret": 0.0
+  },
+  "test_by_month": {
+    "2026-01": {
+      "huber_loss": 0.008012087578914136,
+      "mae": 0.10783423516340755,
+      "n_examples": 7400,
+      "n_groups": 400.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.8895510835913312,
+      "rmse": 0.1265866310390962,
+      "spearman": 0.9777836727945447,
+      "yield_regret": 0.0
+    },
+    "2026-02": {
+      "huber_loss": 0.006478359755332759,
+      "mae": 0.09002655632144656,
+      "n_examples": 7400,
+      "n_groups": 400.0,
+      "ndcg_at_k": 1.0,
+      "objective_regret": 0.0,
+      "pairwise_accuracy": 0.8857693498452014,
+      "rmse": 0.11382758677344222,
+      "spearman": 0.9774423053114392,
+      "yield_regret": 0.0
+    },
+    "2026-03": {
+      "huber_loss": 0.011318313856540887,
+      "mae": 0.11978096533100671,
+      "n_examples": 7400,
+      "n_groups": 400.0,
+      "ndcg_at_k": 0.9999520244116121,
+      "objective_regret": 4.500000000000059e-06,
+      "pairwise_accuracy": 0.9290069659442723,
+      "rmse": 0.15045473642621482,
+      "spearman": 0.9884872354695844,
+      "yield_regret": 2.5000000000000023e-06
+    }
+  },
+  "train": {
+    "huber_loss": 0.008635547012090683,
+    "mae": 0.10608998446638171,
+    "n_examples": 66600,
+    "n_groups": 1200.0,
+    "ndcg_at_k": 1.0,
+    "objective_regret": 0.0,
+    "pairwise_accuracy": 0.8684416528193198,
+    "rmse": 0.13141953403573078,
+    "spearman": 0.970933674006742,
+    "yield_regret": 0.0
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.02500295320539984,
+      "val_loss": 0.008854573380879381
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.008581734418812144,
+      "val_loss": 0.009912023299627683
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.00681177411541229,
+      "val_loss": 0.00865180977747183
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.006074719486459521,
+      "val_loss": 0.010917164300653067
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.005702478981768812,
+      "val_loss": 0.012601512230255386
+    }
+  ],
+  "validation": {
+    "huber_loss": 0.008653627708554268,
+    "mae": 0.10599078993636046,
+    "n_examples": 22200,
+    "n_groups": 400.0,
+    "ndcg_at_k": 1.0,
+    "objective_regret": 0.0,
+    "pairwise_accuracy": 0.8684386340977067,
+    "rmse": 0.1315570417301598,
+    "spearman": 0.9709006895238713,
+    "yield_regret": 0.0
+  }
+}

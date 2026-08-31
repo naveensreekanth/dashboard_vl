@@ -1,0 +1,45 @@
+{
+  "cand_num_dim": 4,
+  "condition_order": [
+    "COND_RT_NOM",
+    "COND_HOT_NOM",
+    "COND_RT_LOWV",
+    "COND_HOT_HIGHV"
+  ],
+  "direction_vocab": {
+    "LOWER": 0,
+    "UPPER": 1
+  },
+  "embed_dim": 8,
+  "gru_hidden": 64,
+  "model_class": "UnifiedParameterGRURanker",
+  "parameter_vocab": {
+    "CONTACT_RESISTANCE": 6,
+    "IDDQ": 4,
+    "INTERCONNECT_RESISTANCE": 7,
+    "ON_RESISTANCE": 8,
+    "SUPPLY_CURRENT": 5,
+    "VMAX": 3,
+    "VMIN": 2,
+    "ir_drop": 0,
+    "thermal": 1
+  },
+  "parametric_context_dim": 8,
+  "production_month_is_gru_feature": false,
+  "seq_input_dim": 5,
+  "sequence_channels": [
+    "ir_drop",
+    "thermal",
+    "setup_slack",
+    "hold_slack",
+    "test_time"
+  ],
+  "sequence_length": 200,
+  "target": "target_score (= objective_score)",
+  "tighten_vocab": {
+    "CURRENT": 0,
+    "LOOSER": 1,
+    "TIGHTER": 2
+  },
+  "wired_into_recommend": false
+}

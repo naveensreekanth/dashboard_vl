@@ -1,0 +1,49 @@
+{
+  "cand_num_dim": 4,
+  "cand_num_fields": [
+    "candidate_limit",
+    "current_limit",
+    "candidate_delta",
+    "candidate_delta_percent"
+  ],
+  "direction_vocab": {
+    "UPPER": 0
+  },
+  "dropout": 0.2,
+  "embed_dim": 8,
+  "gru_hidden": 64,
+  "gru_hidden_size": 64,
+  "gru_input_size": 5,
+  "model_class": "CoreGRURanker",
+  "n_direction": 1,
+  "n_parameter": 2,
+  "n_tight": 3,
+  "observed_cand_num_shape": [
+    4
+  ],
+  "observed_sequence_shape": [
+    200,
+    5
+  ],
+  "output": "scalar ml_score",
+  "parameter_vocab": {
+    "ir_drop": 0,
+    "thermal": 1
+  },
+  "production_month_is_gru_feature": false,
+  "seq_input_dim": 5,
+  "sequence_channels": [
+    "ir_drop",
+    "thermal",
+    "setup_slack",
+    "hold_slack",
+    "test_time"
+  ],
+  "sequence_length": 200,
+  "target": "target_score (= objective_score)",
+  "tighten_vocab": {
+    "CURRENT": 0,
+    "LOOSER": 1,
+    "TIGHTER": 2
+  }
+}

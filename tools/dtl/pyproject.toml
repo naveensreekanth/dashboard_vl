@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dtl-agent"
+version = "0.8.0"
+description = "Dynamic Test Limit (DTL) Agent — Phase 1 data ingestion and validation"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "httpx>=0.27"]
+# Runtime API + three-month ML stack (pins align with requirements.txt).
+# Install torch separately on Linux CPU hosts:
+#   pip install "torch==2.13.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+api = [
+  "fastapi==0.135.2",
+  "uvicorn[standard]==0.42.0",
+  "python-multipart>=0.0.9",
+  "pandas==3.0.2",
+  "numpy==2.2.6",
+  "pyarrow==23.0.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+  "integration: tests that load the real allowlisted agent-input datasets",
+  "slow: end-to-end tests that materialize upload sandboxes and run recommend()",
+]

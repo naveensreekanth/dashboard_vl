@@ -1,0 +1,19 @@
+# Runtime dependencies for the DTL Agent FastAPI service (three-month API + ML).
+# Pins match a known-working local environment (2026-08-25).
+# Target runtime: Python 3.11.x (see .python-version and render.yaml PYTHON_VERSION).
+# Do not use Python 3.14+: pandas 3.0.2 then requires numpy>=2.3.3, which conflicts with
+# the validated numpy==2.2.6 pin.
+#
+# PyTorch is intentionally NOT listed here. Default PyPI torch==2.13.0 on Linux pulls a
+# large CUDA/NVIDIA stack. Render (and other CPU hosts) must install the CPU wheel first:
+#   pip install "torch==2.13.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+# then:
+#   pip install -r requirements.txt && pip install -e .
+# See render.yaml buildCommand. Do not upgrade torch past 2.13.0.
+
+fastapi==0.135.2
+uvicorn[standard]==0.42.0
+python-multipart>=0.0.9
+pandas==3.0.2
+numpy==2.2.6
+pyarrow==23.0.1
