@@ -26,6 +26,16 @@ export function DashboardShell() {
   const { summary, isLoading, isError, refetch } = useDashboardData();
   const selectedWaferId = useOpsStore((s) => s.waferId);
   const hydrateFromSummary = useOpsStore((s) => s.hydrateFromSummary);
+  const [activeTab, setActiveTab] = useState<"overview" | "shmoo" | "test_time" | "dtl" | "retest">("overview");
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const custom = e as CustomEvent<{ tab: "overview" | "shmoo" | "test_time" | "dtl" | "retest" }>;
+      if (custom.detail?.tab) setActiveTab(custom.detail.tab);
+    };
+    window.addEventListener("switchSuiteTab", handler);
+    return () => window.removeEventListener("switchSuiteTab", handler);
+  }, []);
 
   useEffect(() => {
     if (!summary?.active_wafer) return;
@@ -68,16 +78,6 @@ export function DashboardShell() {
   }
 
   const wafer = waferQuery.data ?? summary?.active_wafer ?? null;
-  const [activeTab, setActiveTab] = useState<"overview" | "shmoo" | "test_time" | "dtl" | "retest">("overview");
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const custom = e as CustomEvent<{ tab: "overview" | "shmoo" | "test_time" | "dtl" | "retest" }>;
-      if (custom.detail?.tab) setActiveTab(custom.detail.tab);
-    };
-    window.addEventListener("switchSuiteTab", handler);
-    return () => window.removeEventListener("switchSuiteTab", handler);
-  }, []);
 
   return (
     <div className="mx-auto max-w-[1440px] px-7 pb-[90px] pt-[24px]">
