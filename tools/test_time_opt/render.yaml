@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: test-time-optimization
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PYTHON
+        value: /opt/venv/bin/python
