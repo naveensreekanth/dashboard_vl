@@ -206,7 +206,7 @@ export function DashboardShell() {
               activeTab === "shmoo"
                 ? "http://127.0.0.1:5000"
                 : activeTab === "test_time"
-                ? "http://127.0.0.1:5173"
+                ? "http://127.0.0.1:8787"
                 : activeTab === "dtl"
                 ? "http://127.0.0.1:5174/three-month"
                 : "http://127.0.0.1:5175"
