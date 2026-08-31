@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post-process — next-chip recommendation flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f3f5f7;
+      --ink: #15202b;
+      --muted: #5a6875;
+      --card: #ffffff;
+      --stroke: #d5dde5;
+      --blue: #1d6fb8;
+      --purple: #5b4db8;
+      --green: #0f6b4c;
+      --steel: #3d6ea8;
+      --gold: #9a7420;
+      --warn: #9a7420;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 16px 56px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0 auto;
+      max-width: 38rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .story-banner {
+      margin: 0 auto 28px;
+      max-width: 42rem;
+      background: #fff8e6;
+      border: 1px solid #e3c87a;
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .story-banner strong { color: var(--ink); }
+    .story-banner code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      background: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #e8d9a8;
+    }
+
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .step {
+      background: var(--card);
+      border: 2px solid var(--stroke);
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+    }
+    .step .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .step .num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .step .label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+    .step h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+    }
+    .step > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .step ul {
+      margin: 10px 0 0;
+      padding-left: 1.15rem;
+      font-size: 0.86rem;
+    }
+    .step li { margin: 4px 0; }
+    .step code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      background: #eef2f6;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .note {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f6f8fa;
+      border-left: 3px solid var(--stroke);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .note strong { color: var(--ink); }
+
+    .step.s1 { border-color: #8db7df; }
+    .step.s1 .num { background: var(--blue); }
+    .step.s1 .label { color: var(--blue); }
+    .step.s1 .note { border-left-color: var(--blue); background: #eaf3fb; }
+
+    .step.s2 { border-color: #b3a9e3; }
+    .step.s2 .num { background: var(--purple); }
+    .step.s2 .label { color: var(--purple); }
+    .step.s2 .note { border-left-color: var(--purple); background: #f1eefb; }
+
+    .step.s3 { border-color: #d4bc74; }
+    .step.s3 .num { background: var(--gold); }
+    .step.s3 .label { color: var(--gold); }
+    .step.s3 .note { border-left-color: var(--gold); background: #faf4e4; }
+
+    .step.s4 { border-color: #8fc9a8; }
+    .step.s4 .num { background: var(--green); }
+    .step.s4 .label { color: var(--green); }
+    .step.s4 .note { border-left-color: var(--green); background: #e8f6ef; }
+
+    .step.s5 { border-color: #9bb4d0; }
+    .step.s5 .num { background: var(--steel); }
+    .step.s5 .label { color: var(--steel); }
+    .step.s5 .note { border-left-color: var(--steel); background: #eaf0f7; }
+
+    .step.s6 { border-color: #8fc9a8; }
+    .step.s6 .num { background: var(--green); }
+    .step.s6 .label { color: var(--green); }
+    .step.s6 .note { border-left-color: var(--green); background: #e8f6ef; }
+
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 0;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      gap: 2px;
+      text-align: center;
+    }
+    .arrow .line {
+      width: 2px;
+      height: 18px;
+      background: #9aa3ad;
+    }
+    .arrow .tip {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #9aa3ad;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .split-label {
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      padding: 4px 0 2px;
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+    @media (max-width: 720px) {
+      .pair { grid-template-columns: 1fr; }
+    }
+
+    .viz {
+      background: #0f1419;
+      color: #e8edf4;
+      border-radius: 14px;
+      padding: 14px 14px 16px;
+      border: 1px solid #2a3340;
+    }
+    .viz .viz-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #8eb4d4;
+      margin-bottom: 6px;
+    }
+    .viz h3 {
+      margin: 0 0 4px;
+      font-size: 0.98rem;
+      color: #fff;
+    }
+    .viz .viz-sub {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      color: #8b98a8;
+    }
+    .viz-box {
+      background: #161b22;
+      border: 1px solid #2a3340;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .viz-box .k {
+      font-size: 0.72rem;
+      color: #8b98a8;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #3d4654;
+      background: #1c232d;
+      color: #c9d1d9;
+    }
+    .chip.fail {
+      border-color: #5b8fd4;
+      background: #1a2838;
+      color: #8eb4d4;
+      font-weight: 600;
+    }
+    .chip.pass {
+      border-color: #2d5a42;
+      background: #132019;
+      color: #3ecf8e;
+    }
+    .chip.skip-badge {
+      border-color: #d4a017;
+      background: #3d2e0a;
+      color: #f0c040;
+    }
+    .chip.order {
+      border-color: #2d5a42;
+      background: #132019;
+      color: #3ecf8e;
+      font-weight: 700;
+    }
+    .viz-arrow {
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      color: #8b98a8;
+      margin: 4px 0 8px;
+    }
+    .formula {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      background: #161b22;
+      border: 1px dashed #3d4654;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #c9d1d9;
+      line-height: 1.5;
+    }
+    .rank-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .rank-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      background: #161b22;
+      border: 1px solid #2a3340;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.78rem;
+    }
+    .rank-row .n {
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 700;
+      color: #3ecf8e;
+    }
+    .rank-row .pid {
+      font-family: "IBM Plex Mono", monospace;
+      color: #e8edf4;
+    }
+    .rank-row .tag {
+      font-size: 0.65rem;
+      color: #f0c040;
+      border: 1px solid #d4a017;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .rank-row .why {
+      grid-column: 2 / -1;
+      font-size: 0.7rem;
+      color: #8b98a8;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+    .compare-table th,
+    .compare-table td {
+      text-align: left;
+      padding: 7px 8px;
+      border-bottom: 1px solid var(--stroke);
+    }
+    .compare-table th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .compare-table code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+    }
+    .ok { color: var(--green); font-weight: 600; }
+    .no { color: var(--steel); font-weight: 600; }
+
+    .mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    @media (max-width: 520px) {
+      .mini { grid-template-columns: 1fr; }
+    }
+    .mini div {
+      background: #f8fafb;
+      border: 1px solid var(--stroke);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.8rem;
+    }
+    .mini strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+    .mini span { color: var(--muted); font-size: 0.78rem; }
+
+    .end-box {
+      margin-top: 8px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #e8f6ef;
+      border: 2px solid #8fc9a8;
+      font-size: 0.9rem;
+    }
+    .end-box strong { color: var(--green); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Post-process — step by step</h1>
+      <p>
+        After ATE: read the fail log from one chip, keep the patterns that
+        failed, skip the ones that only passed, and output an ordered list for
+        the <strong>next chip</strong>.
+      </p>
+    </header>
+
+    <div class="story-banner">
+      <strong>Real log used in this diagram</strong><br />
+      File: <code>uploads/logs/…/LOT_1_Center/fail_die_1.log</code><br />
+      From your Advantest V93000 batch: device <code>AI_SOC_5NM</code>, lot
+      <code>LOT_1</code>, defect type <code>CENTER</code>, die label
+      <code>fail_die_1</code> (wafer row/col 28,28).<br />
+      The log has <code>TOTAL_PATTERNS : 1000</code>. On this one die,
+      <strong>57 patterns failed</strong> and <strong>943 only passed</strong>.
+      Post-process recommends those <strong>57</strong> for the <strong>next die/chip</strong>
+      — not all 1000 again.
+    </div>
+
+    <div class="flow">
+
+      <!-- 0 context -->
+      <section class="step s1">
+        <div class="badge">
+          <div class="num">0</div>
+          <div class="label">Already done</div>
+        </div>
+        <h2>Pre-process already finished</h2>
+        <p>
+          Post-process needs the last pre-process run so it knows the full
+          pattern list (keep + skip = all 1000).
+        </p>
+        <ul>
+          <li>Pre-process is a <em>prediction</em> from STIL only (before silicon)</li>
+          <li>Post-process is <em>evidence</em> from the real ATE log (after silicon)</li>
+          <li>A pattern marked “skip” in pre-process can still be recommended if it failed on the die</li>
+        </ul>
+        <div class="note">
+          <strong>Remember:</strong> Post-process uses <strong>all 1000</strong> patterns,
+          not only the keep 600.
+        </div>
+      </section>
+
+      <div class="arrow"><span>then you open Post-process</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 1 -->
+      <section class="step s1">
+        <div class="badge">
+          <div class="num">1</div>
+          <div class="label">Input · Log</div>
+        </div>
+        <h2>Add this real ATE log (1 file = 1 die)</h2>
+        <p>
+          In the dashboard: <code>Add log files</code> → select
+          <code>fail_die_1.log</code> from folder <code>LOT_1_Center</code>.
+        </p>
+        <ul>
+          <li><strong>Full path (on this project):</strong>
+            <code>uploads/logs/1785918255897_201a39a5/LOT_1_Center/fail_die_1.log</code></li>
+          <li>Tester: <code>ADVANTEST_V93000</code> · program <code>ATPG_SCAN_V5</code></li>
+          <li>Header says <code>DIE_LABEL : fail_die_1</code>, <code>TOTAL_PATTERNS : 1000</code></li>
+          <li>File size ≈ 9.8 MB — analysis still runs locally in the browser</li>
+        </ul>
+        <div class="note">
+          <strong>What is inside this log?</strong> A header (device/lot/die), then a
+          <em>PATTERN EXECUTION LOG</em>: for every pattern P1…P1000 and each scan
+          channel CH1…, it prints EXPECTED vs ACTUAL waveforms and
+          <code>STATUS:P</code> or <code>STATUS:F</code>.
+        </div>
+        <div class="note">
+          <strong>Output of step 1:</strong> one die log ready to parse —
+          <code>LOT_1_Center/fail_die_1.log</code>
+        </div>
+      </section>
+
+      <div class="arrow"><span>then click Analyze &amp; recommend next chip</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 2 parse + visual -->
+      <div class="pair">
+        <section class="step s2">
+          <div class="badge">
+            <div class="num">2</div>
+            <div class="label">Parse</div>
+          </div>
+          <h2>Read every pattern result from fail_die_1.log</h2>
+          <p>For each pattern id, count fails, passes, and failing channels.</p>
+          <ul>
+            <li>Log labels are 1-based (<code>P1…P1000</code>)</li>
+            <li>Dashboard ids are 0-based (<code>0…999</code>) — tool maps <code>Pn → id n−1</code></li>
+            <li>Fail = any channel line with <code>STATUS:F</code> for that pattern</li>
+            <li><strong>If one channel failed, the whole pattern is failed</strong> on that die</li>
+          </ul>
+          <div class="note">
+            <strong>Real example from this file — pattern P8</strong><br />
+            CH1 and CH2 are <code>STATUS:P</code>. CH3 is <code>STATUS:F</code>.<br />
+            <strong>Rule:</strong> if <em>any one channel</em> fails, the
+            <em>whole pattern</em> is counted as failed on that die
+            (we do not count CH1/CH2 as pattern passes).<br />
+            So: <code>fails = 1</code>, <code>passes = 0</code>,
+            <code>fail rate = 100%</code>, failing channel = CH3.<br />
+            Dashboard id = <code>P7</code> (because log P8 → id 7).<br /><br />
+            That 100% means “failed on this die,” not “fails on every die forever.”
+          </div>
+          <div class="note">
+            <strong>Counts measured on this file:</strong>
+            1000 patterns with status · <strong>57 failing</strong> ·
+            <strong>943 pass-only</strong>
+          </div>
+          <div class="note"><strong>Output of step 2:</strong> pass/fail table for all 1000 patterns in fail_die_1.log</div>
+        </section>
+
+        <aside class="viz" aria-label="Parse example from real log">
+          <div class="viz-title">Real file · LOT_1_Center / fail_die_1.log</div>
+          <h3>What the parser sees</h3>
+          <p class="viz-sub">Excerpt taken from the actual Advantest log</p>
+
+          <div class="viz-box">
+            <div class="k">Header (top of file)</div>
+            <div class="formula">
+              TESTER_NAME : ADVANTEST_V93000<br />
+              DEVICE_NAME : AI_SOC_5NM<br />
+              LOT_ID : LOT_1<br />
+              DEFECT_TYPE : CENTER<br />
+              DIE_LABEL : fail_die_1<br />
+              TOTAL_PATTERNS : 1000
+            </div>
+          </div>
+          <div class="viz-box">
+            <div class="k">First failing pattern (simplified)</div>
+            <div class="formula">
+              P8 | CH1 … STATUS:P<br />
+              P8 | CH2 … STATUS:P<br />
+              P8 | CH3 … STATUS:F ← one channel fail<br />
+              ⇒ whole pattern P8 FAILED on this die
+            </div>
+          </div>
+          <div class="viz-arrow">↓ map Pn → dashboard id (n−1)</div>
+          <div class="viz-box">
+            <div class="k">Counted results (examples from this die)</div>
+            <div class="chip-row">
+              <span class="chip fail">P7 FAIL (log P8)</span>
+              <span class="chip fail">P70 FAIL (log P71)</span>
+              <span class="chip fail">P485 FAIL (log P486)</span>
+              <span class="chip pass">most others PASS</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="arrow"><span>then split the 1000 patterns into two buckets</span><div class="line"></div><div class="tip"></div></div>
+      <div class="split-label">same fail_die_1.log → two decisions</div>
+
+      <div class="split">
+        <section class="step s4">
+          <div class="badge">
+            <div class="num">3a</div>
+            <div class="label">Run next</div>
+          </div>
+          <h2>Failed on fail_die_1 → include</h2>
+          <p>Every pattern with at least one <code>STATUS:F</code> is recommended for the next die.</p>
+          <ul>
+            <li>This file: <strong>57</strong> failing labels (log P8, P18, P44, P71, … P967)</li>
+            <li>Dashboard ids: P7, P17, P43, P70, …</li>
+            <li>Includes both pre-process keep and skip patterns if they failed</li>
+          </ul>
+          <div class="note"><strong>Meaning:</strong> do not drop a pattern that already caught a fail on this die</div>
+        </section>
+
+        <section class="step s5">
+          <div class="badge">
+            <div class="num">3b</div>
+            <div class="label">Skip next</div>
+          </div>
+          <h2>Only passed on fail_die_1 → skip</h2>
+          <p>Patterns with fail = 0 and pass &gt; 0 are not recommended for the next die.</p>
+          <ul>
+            <li>This file: <strong>943</strong> pass-only patterns</li>
+            <li>This is where test-time reduction comes from</li>
+            <li>Evidence-based: the log said they passed on this die</li>
+          </ul>
+          <div class="note"><strong>Meaning:</strong> no fail evidence → skip them next to save ATE time</div>
+        </section>
+      </div>
+
+      <div class="arrow"><span>then order the 57 failers</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 4 rank -->
+      <div class="pair">
+        <section class="step s3">
+          <div class="badge">
+            <div class="num">4</div>
+            <div class="label">Order</div>
+          </div>
+          <h2>Rank failed patterns by severity</h2>
+          <p>With one die log, order by how hard each pattern failed on that die.</p>
+          <ul>
+            <li><strong>1st:</strong> more failing channels</li>
+            <li><strong>2nd:</strong> higher fail rate</li>
+            <li><strong>3rd:</strong> more fails</li>
+            <li>On <code>fail_die_1.log</code>, many failers look alike: 1 channel (often CH3), 100% rate, 1 fail — so they are near ties</li>
+          </ul>
+          <div class="note">
+            <strong>Why fail rate is 100% here</strong><br />
+            One die: <code>fail rate = 1 ÷ (1 + 0) = 100%</code> for every failer.
+            That is expected for a single-die Advantest log like this one.
+          </div>
+          <div class="note"><strong>Output of step 4:</strong> ordered list of the 57 failers from fail_die_1.log</div>
+        </section>
+
+        <aside class="viz" aria-label="Ordering example from real fails">
+          <div class="viz-title">From real fails in fail_die_1.log</div>
+          <h3>Example recommend rows</h3>
+          <p class="viz-sub">Dashboard ids · first failers in this die</p>
+          <div class="rank-list">
+            <div class="rank-row">
+              <span class="n">1</span>
+              <span class="pid">P7</span>
+              <span class="chip order">run</span>
+              <span class="why">log P8 · CH3 STATUS:F on fail_die_1</span>
+            </div>
+            <div class="rank-row">
+              <span class="n">2</span>
+              <span class="pid">P17</span>
+              <span class="chip order">run</span>
+              <span class="why">log P18 · CH3 STATUS:F</span>
+            </div>
+            <div class="rank-row">
+              <span class="n">3</span>
+              <span class="pid">P43</span>
+              <span class="chip order">run</span>
+              <span class="why">log P44 · CH3 STATUS:F</span>
+            </div>
+            <div class="rank-row">
+              <span class="n">4</span>
+              <span class="pid">P70</span>
+              <span class="chip order">run</span>
+              <span class="why">log P71 · CH3 STATUS:F</span>
+            </div>
+            <div class="rank-row">
+              <span class="n">…</span>
+              <span class="pid">53 more failers</span>
+              <span class="chip order">run</span>
+              <span class="why">same rule: failed on this die → include (57 total)</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="arrow"><span>then the dashboard shows the answer</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 5 dashboard -->
+      <section class="step s3">
+        <div class="badge">
+          <div class="num">5</div>
+          <div class="label">Dashboard</div>
+        </div>
+        <h2>You see summary + ordered list</h2>
+        <div class="mini">
+          <div>
+            <strong>Status line</strong>
+            <span>e.g. 57 to run · 943 pass-only skipped (from this file)</span>
+          </div>
+          <div>
+            <strong>Summary cards</strong>
+            <span>Fails among high-recommended vs low-risk from pre-process</span>
+          </div>
+          <div>
+            <strong>Recommend table</strong>
+            <span>Order · Pattern · Tier · Fail rate · Fails · Why</span>
+          </div>
+          <div>
+            <strong>Copy ordered list</strong>
+            <span>Paste into next-die / ATE load planning</span>
+          </div>
+        </div>
+        <div class="note">
+          <strong>Output of step 5:</strong> clear next-die pattern order built from
+          <code>fail_die_1.log</code>
+        </div>
+      </section>
+
+      <div class="arrow"><span>finally</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 6 end -->
+      <section class="step s6">
+        <div class="badge">
+          <div class="num">6</div>
+          <div class="label">Next die</div>
+        </div>
+        <h2>Run the short list on the next die/chip</h2>
+        <p>
+          Instead of loading all 1000 patterns again, load the 57 failers from
+          <code>fail_die_1.log</code> first.
+        </p>
+        <div class="end-box">
+          <strong>One-sentence story from this real log:</strong><br />
+          <code>LOT_1_Center/fail_die_1.log</code> (Advantest V93000, AI_SOC_5NM)
+          showed 57 patterns with <code>STATUS:F</code> and 943 that only passed —
+          Post-process turns that into an ordered shorter list for the next die.
+        </div>
+        <ul>
+          <li>Input: <code>fail_die_1.log</code> (1 die)</li>
+          <li>Keep: every pattern that failed (57)</li>
+          <li>Drop: every pattern that only passed (943)</li>
+          <li>Order: severity on that die (channels → fail rate → fails)</li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

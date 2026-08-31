@@ -1,0 +1,22 @@
+{
+  "name": "ate-vector-memory",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ATE vector memory live dashboard (React + Node)",
+  "scripts": {
+    "dev": "npm run build --prefix client && concurrently -k \"npm run server\" \"npm run client\"",
+    "server": "node server/index.js",
+    "client": "npm run dev --prefix client",
+    "install:all": "npm install && npm install --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

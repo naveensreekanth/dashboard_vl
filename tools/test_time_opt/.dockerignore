@@ -1,0 +1,10 @@
+node_modules
+client/node_modules
+client/dist
+uploads
+.git
+__pycache__
+*.pyc
+.streamlit
+*.md
+.cursor

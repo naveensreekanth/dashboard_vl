@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post-process guide demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --panel-2: #eef1f4;
+      --surface: #f0f3f6;
+      --stroke: #d0d7de;
+      --text: #1a1f26;
+      --muted: #5a6570;
+      --full: #3d6ea8;
+      --lstm: #1f8f5f;
+      --accent: #b8860b;
+      --warn: #c48a12;
+      --keep-bg: #e8f5ee;
+      --keep-border: #8fc9a8;
+      --discard-bg: #e8eef6;
+      --discard-border: #9bb4d0;
+      --seed-bg: #fff8e6;
+      --diff-border: #d4a017;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); }
+    .app { max-width: 1200px; margin: 0 auto; padding: 28px 20px 48px; }
+    .hero h1 { margin: 0 0 6px; font-size: 1.85rem; font-weight: 700; letter-spacing: -0.02em; }
+    .hero p { margin: 0; color: var(--muted); max-width: 52rem; line-height: 1.5; }
+    .flow {
+      margin-top: 14px; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem;
+      color: var(--accent); background: var(--panel); border: 1px solid var(--stroke);
+      display: inline-block; padding: 8px 12px;
+    }
+    .process-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .process-switch button {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+      text-align: left; padding: 12px 14px; border: 1px solid var(--stroke);
+      background: var(--panel); color: var(--muted); cursor: pointer; font: inherit;
+    }
+    .process-switch button.active {
+      border-color: var(--lstm); background: var(--keep-bg); color: var(--text);
+    }
+    .process-k { font-size: 0.95rem; font-weight: 650; }
+    .process-v { font-size: 0.78rem; color: var(--muted); }
+    .layout { display: grid; grid-template-columns: 300px 1fr; gap: 18px; margin-top: 22px; }
+    .panel { background: var(--panel); border: 1px solid var(--stroke); padding: 16px; }
+    .panel h2 {
+      margin: 0 0 12px; font-size: 0.95rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .process-panel-tag {
+      display: inline-block; margin-bottom: 10px; padding: 3px 8px; font-size: 0.72rem;
+      font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--full); background: var(--discard-bg); border: 1px solid var(--discard-border);
+    }
+    .field-hint { margin: 0 0 10px; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+    .btn {
+      width: 100%; border: none; cursor: pointer; padding: 12px 14px; font-weight: 600;
+      font-size: 0.95rem; background: var(--lstm); color: #fff; margin-top: 0;
+    }
+    .btn.secondary {
+      margin-top: 8px; background: transparent; color: var(--muted); border: 1px solid var(--stroke);
+    }
+    .file-name { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--lstm); margin: 6px 0; }
+    .chooser-meta { font-size: 0.8rem; color: var(--accent); }
+    .status { margin-bottom: 12px; font-size: 0.9rem; color: var(--lstm); min-height: 1.4em; }
+    .status.ok { color: var(--lstm); }
+    .fail-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 14px; }
+    .metric { background: var(--panel); border: 1px solid var(--stroke); padding: 12px; }
+    .metric .k { font-size: 0.75rem; color: var(--muted); }
+    .metric .v { margin-top: 4px; font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; }
+    .metric .v-sub { font-size: 0.75rem; color: var(--muted); }
+    .next-chip {
+      margin: 0 0 18px; background: var(--panel); border: 1px solid var(--stroke); padding: 14px 14px 10px;
+    }
+    .next-chip-head {
+      display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .next-chip-head h2 { margin: 0 0 6px; font-size: 1.05rem; }
+    .next-chip-metrics { margin-bottom: 12px; }
+    .next-chip-scroll {
+      overflow: auto; max-height: 420px; border: 1px solid var(--stroke); background: var(--surface);
+    }
+    .fail-table {
+      width: 100%; border-collapse: collapse; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem;
+    }
+    .fail-table th, .fail-table td {
+      text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--stroke);
+    }
+    .fail-table th {
+      color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--surface);
+    }
+    .fail-num { color: var(--full); font-weight: 700; }
+    .why-cell {
+      font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 0.75rem;
+      color: var(--muted); max-width: 28rem; line-height: 1.35;
+    }
+    .tier-pill {
+      display: inline-block; margin-left: 0; padding: 1px 6px; font-size: 0.68rem;
+      font-family: "IBM Plex Sans", system-ui, sans-serif; font-weight: 600;
+      border: 1px solid var(--stroke); color: var(--muted);
+    }
+    .tier-pill.tier-log_fail {
+      color: var(--lstm); background: var(--keep-bg); border-color: var(--keep-border);
+    }
+    .tier-pill.skip-pill {
+      margin-left: 8px; color: var(--warn); border-color: var(--diff-border); background: var(--seed-bg);
+    }
+    tr.tier-log_fail td:first-child { border-left: 3px solid var(--keep-border); }
+    .post-empty {
+      background: var(--panel); border: 1px solid var(--stroke); padding: 22px 20px;
+    }
+    .post-empty h2 { margin: 0 0 8px; font-size: 1.1rem; }
+    .post-empty p { margin: 0 0 12px; color: var(--muted); line-height: 1.5; max-width: 42rem; }
+    .post-empty ol { margin: 0 0 14px; padding-left: 1.2rem; line-height: 1.65; }
+    .shot-pad { margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- 01 switch -->
+    <div class="shot-pad" data-shot="post-01-switch">
+      <header class="hero">
+        <h1>test time optimization — Verilumen simulation agent</h1>
+        <p>
+          Pre-process: STIL → pattern prediction. Post-process: ATE logs →
+          fail analysis.
+        </p>
+        <div class="flow">Pre: STIL → predict · Post: logs → fail analysis</div>
+      </header>
+      <div class="process-switch" role="tablist">
+        <button type="button">
+          <span class="process-k">Pre-process</span>
+          <span class="process-v">STIL → pattern prediction</span>
+        </button>
+        <button type="button" class="active">
+          <span class="process-k">Post-process</span>
+          <span class="process-v">ATE logs → fail analysis</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 02 sidebar empty / controls -->
+    <div class="shot-pad" data-shot="post-02-sidebar">
+      <div class="layout" style="grid-template-columns: 300px 1fr;">
+        <aside class="panel">
+          <div class="process-panel-tag">Post-process</div>
+          <h2>Fail logs</h2>
+          <p class="field-hint">
+            After ATE: one log file = one die/chip. Analysis stays on this PC.
+            Add the log from chip N to recommend patterns for chip N+1.
+          </p>
+          <button type="button" class="btn secondary">Add log folder</button>
+          <button type="button" class="btn secondary">Add log files</button>
+          <div class="file-name">chip_N_die42.log</div>
+          <div class="chooser-meta">1 folder(s) · 1 file(s)</div>
+          <button type="button" class="btn" style="margin-top: 12px;">Analyze &amp; recommend next chip</button>
+          <button type="button" class="btn secondary">Clear logs</button>
+        </aside>
+        <main>
+          <div class="status">
+            Post-process ready — 1000 patterns from pre-process (keep 600 · skip 400). Add logs and Analyze.
+          </div>
+          <div class="post-empty">
+            <h2>Next-chip pattern recommendation</h2>
+            <p>
+              Pre-process predicts from STIL before ATE. Post-process uses
+              real fail logs from tested chips, then recommends a reduced
+              ordered pattern list for the next chip.
+            </p>
+            <ol>
+              <li>Complete Pre-process (STIL → Run live simulation)</li>
+              <li>Add log folders (chips/dies) from your PC</li>
+              <li>Click Analyze &amp; recommend next chip</li>
+            </ol>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- 03 summary metrics after analyze -->
+    <div class="shot-pad" data-shot="post-03-summary">
+      <div class="status ok">
+        Next-chip: 57 to run (57 failed in logs) · 943 log pass-only skipped
+      </div>
+      <div class="fail-summary">
+        <div class="metric">
+          <div class="k">Log folders (dies)</div>
+          <div class="v">1</div>
+        </div>
+        <div class="metric">
+          <div class="k">high recommended patterns from pre-process</div>
+          <div class="v">29<span class="v-sub"> across 29/600 pats</span></div>
+        </div>
+        <div class="metric">
+          <div class="k">low risk patterns from pre-process</div>
+          <div class="v">28<span class="v-sub"> across 28/400 pats</span></div>
+        </div>
+        <div class="metric">
+          <div class="k">Files parsed</div>
+          <div class="v">1</div>
+        </div>
+      </div>
+      <p class="field-hint">
+        Log labels are 1-based (P1…P1000); tables use Verilumen agent ids (0…999).
+        Fail = any channel STATUS:F on a die.
+      </p>
+    </div>
+
+    <!-- 04 next chip recommend head + metrics -->
+    <div class="shot-pad" data-shot="post-04-recommend-metrics">
+      <div class="next-chip">
+        <div class="next-chip-head">
+          <div>
+            <h2>Recommended patterns for next chip</h2>
+            <p class="field-hint">
+              From your logs only: <strong>1 log = 1 die/chip</strong>. Every
+              pattern that failed on that chip is included, ordered by severity
+              (channels → fail rate → fails). Patterns that only passed are
+              skipped.
+            </p>
+          </div>
+          <button type="button" class="btn secondary" style="width: auto;">Copy ordered list</button>
+        </div>
+        <div class="fail-summary next-chip-metrics">
+          <div class="metric">
+            <div class="k">Recommend</div>
+            <div class="v">57<span class="v-sub"> / 1000</span></div>
+          </div>
+          <div class="metric">
+            <div class="k">Failed in logs</div>
+            <div class="v">57<span class="v-sub"> must-run</span></div>
+          </div>
+          <div class="metric">
+            <div class="k">Log pass → skip</div>
+            <div class="v">943</div>
+          </div>
+          <div class="metric">
+            <div class="k">Failed patterns</div>
+            <div class="v" style="font-size: 0.95rem;">57</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 recommend table -->
+    <div class="shot-pad" data-shot="post-05-recommend-table">
+      <div class="next-chip">
+        <div class="next-chip-head">
+          <div>
+            <h2>Recommended patterns for next chip</h2>
+          </div>
+        </div>
+        <div class="next-chip-scroll" style="max-height: none;">
+          <table class="fail-table next-chip-table">
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Pattern</th>
+                <th>Tier</th>
+                <th>Fail rate</th>
+                <th>Fails</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="tier-log_fail">
+                <td>1</td>
+                <td>P485 <span class="tier-pill skip-pill">was skip</span></td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · pre-process skip, failed on silicon · 1 channel STATUS:F</td>
+              </tr>
+              <tr class="tier-log_fail">
+                <td>2</td>
+                <td>P70 <span class="tier-pill skip-pill">was skip</span></td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · pre-process skip, failed on silicon · 1 channel STATUS:F</td>
+              </tr>
+              <tr class="tier-log_fail">
+                <td>3</td>
+                <td>P296 <span class="tier-pill skip-pill">was skip</span></td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · pre-process skip, failed on silicon · 1 channel STATUS:F</td>
+              </tr>
+              <tr class="tier-log_fail">
+                <td>4</td>
+                <td>P7</td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · 1 channel STATUS:F</td>
+              </tr>
+              <tr class="tier-log_fail">
+                <td>5</td>
+                <td>P17</td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · 1 channel STATUS:F</td>
+              </tr>
+              <tr class="tier-log_fail">
+                <td>6</td>
+                <td>P43 <span class="tier-pill skip-pill">was skip</span></td>
+                <td><span class="tier-pill tier-log_fail">log fail</span></td>
+                <td>100.0%</td>
+                <td class="fail-num">1</td>
+                <td class="why-cell">failed on this chip (1 log = 1 die) · 1 fail(s), 100.0% fail rate · pre-process skip, failed on silicon · 1 channel STATUS:F</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 full page composed -->
+    <div class="shot-pad" data-shot="post-00-full">
+      <header class="hero">
+        <h1>test time optimization — Verilumen simulation agent</h1>
+        <p>Pre-process: STIL → pattern prediction. Post-process: ATE logs → fail analysis.</p>
+        <div class="flow">Pre: STIL → predict · Post: logs → fail analysis</div>
+      </header>
+      <div class="process-switch">
+        <button type="button"><span class="process-k">Pre-process</span><span class="process-v">STIL → pattern prediction</span></button>
+        <button type="button" class="active"><span class="process-k">Post-process</span><span class="process-v">ATE logs → fail analysis</span></button>
+      </div>
+      <div class="layout">
+        <aside class="panel">
+          <div class="process-panel-tag">Post-process</div>
+          <h2>Fail logs</h2>
+          <p class="field-hint">After ATE: one log file = one die/chip. Analysis stays on this PC.</p>
+          <button type="button" class="btn secondary">Add log folder</button>
+          <button type="button" class="btn secondary">Add log files</button>
+          <div class="file-name">chip_N_die42.log</div>
+          <div class="chooser-meta">1 folder(s) · 1 file(s)</div>
+          <button type="button" class="btn" style="margin-top:12px;">Analyze &amp; recommend next chip</button>
+          <button type="button" class="btn secondary">Clear logs</button>
+        </aside>
+        <main>
+          <div class="status ok">Next-chip: 57 to run (57 failed in logs) · 943 log pass-only skipped</div>
+          <div class="fail-summary">
+            <div class="metric"><div class="k">Log folders (dies)</div><div class="v">1</div></div>
+            <div class="metric"><div class="k">high recommended patterns from pre-process</div><div class="v">29<span class="v-sub"> across 29/600 pats</span></div></div>
+            <div class="metric"><div class="k">low risk patterns from pre-process</div><div class="v">28<span class="v-sub"> across 28/400 pats</span></div></div>
+            <div class="metric"><div class="k">Files parsed</div><div class="v">1</div></div>
+          </div>
+          <div class="next-chip">
+            <div class="next-chip-head">
+              <div>
+                <h2>Recommended patterns for next chip</h2>
+                <p class="field-hint">From your logs only: <strong>1 log = 1 die/chip</strong>. Failed patterns are included; pass-only are skipped.</p>
+              </div>
+              <button type="button" class="btn secondary" style="width:auto;">Copy ordered list</button>
+            </div>
+            <div class="fail-summary next-chip-metrics">
+              <div class="metric"><div class="k">Recommend</div><div class="v">57<span class="v-sub"> / 1000</span></div></div>
+              <div class="metric"><div class="k">Failed in logs</div><div class="v">57<span class="v-sub"> must-run</span></div></div>
+              <div class="metric"><div class="k">Log pass → skip</div><div class="v">943</div></div>
+              <div class="metric"><div class="k">Failed patterns</div><div class="v" style="font-size:0.95rem;">57</div></div>
+            </div>
+            <div class="next-chip-scroll" style="max-height: 220px;">
+              <table class="fail-table">
+                <thead><tr><th>Order</th><th>Pattern</th><th>Tier</th><th>Fail rate</th><th>Fails</th><th>Why</th></tr></thead>
+                <tbody>
+                  <tr class="tier-log_fail"><td>1</td><td>P485 <span class="tier-pill skip-pill">was skip</span></td><td><span class="tier-pill tier-log_fail">log fail</span></td><td>100.0%</td><td class="fail-num">1</td><td class="why-cell">failed on this chip · 1 channel STATUS:F</td></tr>
+                  <tr class="tier-log_fail"><td>2</td><td>P70 <span class="tier-pill skip-pill">was skip</span></td><td><span class="tier-pill tier-log_fail">log fail</span></td><td>100.0%</td><td class="fail-num">1</td><td class="why-cell">failed on this chip · 1 channel STATUS:F</td></tr>
+                  <tr class="tier-log_fail"><td>3</td><td>P7</td><td><span class="tier-pill tier-log_fail">log fail</span></td><td>100.0%</td><td class="fail-num">1</td><td class="why-cell">failed on this chip · 1 channel STATUS:F</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

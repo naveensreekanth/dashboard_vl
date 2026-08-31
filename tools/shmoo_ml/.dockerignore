@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+uploads/*
+reports/*
+!uploads/.gitkeep
+!reports/.gitkeep
+models/*.gguf

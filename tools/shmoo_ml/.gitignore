@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Temporary / Scratch Test Files
+test_*.py
+test_*.png
+test_*.pdf
+test_*.csv
+SHMOO_2000_Analysis_Report.pdf
+
+# Large model binary weights
+models/*.gguf
+models/*.bin
+models/*.pth
+models/*.pkl
+!models/.gitkeep
+
+# Uploads & Reports Cache
+uploads/*
+!uploads/.gitkeep
+reports/*
+!reports/.gitkeep
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
