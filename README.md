@@ -1,13 +1,13 @@
-# Dashboard VL - Unified ATE & Semiconductor ML Tool Suite
+# Dashboard VL
 
-A unified platform bringing together machine learning, diagnostics, and testing tools for semiconductor ATE workflows.
+Unified Semiconductor ATE & ML Analytics Suite.
 
-## Tools in Suite
-- **M-BIST Shmoo ML Optimization** (`tools/shmoo`)
-- **ATE Dashboard & Analytics** (`tools/ate_frontend`)
-- Additional ML modules under integration (`tools/`)
+## Structure
+- `tools/shmoo_ml`: M-BIST Shmoo ML Optimization
+- `tools/ate_frontend`: ATE Dashboard & Analytics
+- `dashboard/`: Unified local launcher & UI
 
-## Branches Strategy
-- `main`: Production and stable releases only.
-- `dev`: Integration branch where all team members merge verified features.
-- `feature/*`: Individual active development branches.
+## Branching
+- `main`: Stable production releases
+- `dev`: Integration branch
+- `feature/<tool_name>`: Individual feature development
