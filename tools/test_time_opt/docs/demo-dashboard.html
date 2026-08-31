@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard guide demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0e1116; --panel:#161b22; --panel-2:#1c232d; --stroke:#2a3340;
+      --text:#e8edf4; --muted:#8b98a8; --full:#5b8fd4; --lstm:#3ecf8e;
+      --rss:#4ea1f3; --accent:#d4a017; --warn:#f0b429;
+      font-family:"IBM Plex Sans",system-ui,sans-serif; color:var(--text); background:var(--bg);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg)}
+    .app{max-width:1200px;margin:0 auto;padding:28px 20px 48px}
+    .hero h1{margin:0 0 6px;font-size:1.85rem;font-weight:700;letter-spacing:-.02em}
+    .hero p{margin:0;color:var(--muted);max-width:52rem;line-height:1.5}
+    .flow{margin-top:14px;font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--accent);background:var(--panel);border:1px solid var(--stroke);display:inline-block;padding:8px 12px}
+    .layout{display:grid;grid-template-columns:300px 1fr;gap:18px;margin-top:22px}
+    .panel{background:var(--panel);border:1px solid var(--stroke);padding:16px}
+    .panel h2{margin:0 0 12px;font-size:.95rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+    .btn{width:100%;border:none;cursor:pointer;padding:12px 14px;font-weight:600;font-size:.95rem;background:var(--lstm);color:#062015;margin-top:0}
+    .btn.secondary{margin-top:8px;background:transparent;color:var(--muted);border:1px solid var(--stroke)}
+    .panel-divider{height:1px;background:var(--stroke);margin:18px 0 14px}
+    .field-hint{margin:0 0 10px;font-size:.78rem;color:var(--muted);line-height:1.4}
+    .file-name{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--lstm);margin:6px 0}
+    .status{margin-bottom:12px;font-size:.9rem;color:var(--lstm);min-height:1.4em}
+    .progress{height:8px;background:#0b0e12;border:1px solid var(--stroke);margin-bottom:14px;overflow:hidden}
+    .progress>div{height:100%;width:100%;background:var(--accent)}
+    .chooser-window{background:var(--panel);border:1px solid var(--stroke);padding:14px;margin-bottom:14px}
+    .chooser-window-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+    .chooser-window-head h2{margin:0;font-size:1rem}
+    .chooser-meta{font-size:.8rem;color:var(--accent)}
+    .ten-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .ten-board{border:1px solid var(--stroke);background:#0b0e12;padding:10px}
+    .ten-board.normal{border-top:3px solid var(--full)}
+    .ten-board.lstm{border-top:3px solid var(--lstm)}
+    .ten-title{font-size:.85rem;font-weight:600;margin-bottom:8px}
+    .ten-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .ten-slot{background:#12161c;border:1px solid var(--stroke);padding:8px 4px;text-align:center;color:var(--text)}
+    .ten-slot.filled{border-color:#2d5a42}
+    .ten-slot-num{font-size:.65rem;color:var(--muted)}
+    .ten-slot-pid{font-family:"IBM Plex Mono",monospace;font-size:.8rem;margin:4px 0}
+    .ten-slot-tag{font-size:.6rem;color:var(--lstm)}
+    .how-pick{margin-top:12px;border:1px solid var(--stroke);background:#0b0e12;padding:12px}
+    .how-pick-label{font-size:.78rem;font-weight:700;letter-spacing:.04em;margin-bottom:8px}
+    .bit-strip{display:flex;flex-wrap:wrap;gap:1px;margin-top:6px}
+    .bit-cell{width:10px;height:14px;font-size:.55rem;display:inline-flex;align-items:center;justify-content:center;background:#1a2030}
+    .bit-cell.one{background:#1e3a2f;color:var(--lstm)}
+    .bit-cell.zero{background:#2a1f1f;color:#c98989}
+    .bit-cell.diff{outline:1px solid var(--accent)}
+    .gauges{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .gauge-card{background:var(--panel-2);border:1px solid var(--stroke);padding:14px}
+    .gauge-card .label{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+    .gauge-card .value{font-family:"IBM Plex Mono",monospace;font-size:1.8rem;font-weight:500;margin:4px 0 10px}
+    .gauge-card.full .value{color:var(--full)}
+    .gauge-card.lstm .value{color:var(--lstm)}
+    .bar-track{height:14px;background:#0b0e12;border:1px solid var(--stroke);overflow:hidden}
+    .bar-fill{height:100%}
+    .bar-fill.full{background:var(--full);width:100%}
+    .bar-fill.lstm{background:var(--lstm);width:58%}
+    .bar-fill.time-l{width:62%}
+    .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+    .metric{background:var(--panel);border:1px solid var(--stroke);padding:12px}
+    .metric .k{font-size:.75rem;color:var(--muted)}
+    .metric .v{margin-top:4px;font-family:"IBM Plex Mono",monospace;font-size:1.05rem}
+    .chart-wrap{background:var(--panel);border:1px solid var(--stroke);padding:12px;margin-bottom:14px;min-height:180px}
+    .chart-title{font-size:.85rem;color:var(--muted);margin-bottom:10px}
+    .fake-chart{height:140px;background:linear-gradient(180deg,rgba(226,91,76,.25),transparent 60%),linear-gradient(180deg,rgba(62,207,142,.2),transparent 70%);border:1px dashed var(--stroke);display:flex;align-items:flex-end;padding:12px;gap:8px}
+    .fake-chart span{flex:1;background:rgba(62,207,142,.45);height:40%}
+    .fake-chart span:nth-child(odd){height:70%;background:rgba(226,91,76,.4)}
+    .done-banner{border:1px solid #2d5a42;background:#132019;color:var(--lstm);padding:12px 14px;font-size:.95rem;line-height:1.45;margin-bottom:14px}
+    .lists-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+    .pattern-panel{border:1px solid var(--stroke);background:#0b0e12;min-height:180px}
+    .pattern-panel.keep{border-color:#2d5a42}
+    .pattern-panel.discard{border-color:#3d5a7a}
+    .pattern-panel-head{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--stroke)}
+    .pattern-panel.keep .pattern-panel-head h2{margin:0;font-size:.95rem;color:var(--lstm)}
+    .pattern-panel.discard .pattern-panel-head h2{margin:0;font-size:.95rem;color:var(--full)}
+    .pattern-panel-body{padding:10px 12px}
+    .pattern-id-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .pattern-id-chip{font-family:"IBM Plex Mono",monospace;font-size:.72rem;border:1px solid #2d5a42;padding:4px 7px;background:#132019;color:var(--lstm)}
+    .pattern-panel.discard .pattern-id-chip{border-color:#3d5a7a;color:#8eb4d4;background:#121820}
+    .fail-badge{margin-left:2px;padding:0 4px;font-size:.62rem;font-weight:700;background:#5a4820;color:#f0d78c;border:1px solid #8a6d00}
+    .discard-example{margin:0 12px;padding:10px 12px;border:1px solid #3d5a7a;background:#121820}
+    .discard-example-title{font-size:.78rem;font-weight:700;color:var(--full);margin-bottom:6px}
+    .discard-example-body{margin:0 0 8px;font-size:.85rem;line-height:1.45}
+    .discard-bits-caption{font-size:.72rem;color:var(--muted);margin:8px 0 6px;line-height:1.35}
+    .bit-strip-wrap{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+    .bit-strip-label{font-size:.65rem;color:var(--muted);text-transform:uppercase}
+    .bit-strip{display:flex;flex-wrap:wrap;gap:1px}
+    .bit-cell{width:10px;height:12px;display:inline-flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;font-size:.5rem;font-weight:700;border:1px solid #2a3340;background:#161b22;color:#8b949e}
+    .bit-cell.one{color:#c9d1d9}
+    .bit-cell.same{outline:1px solid #d4a017;background:#3d2e0a;color:#f0c040}
+    .bit-cell.diff-red{outline:1px solid #5b8fd4;background:#1a2838;color:#8eb4d4}
+    .bit-cell.diff{outline:1px solid #e3b341;background:#3d3218;color:#f0d78c}
+    .fail-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 14px}
+    .fail-table-panel{border:1px solid var(--stroke);background:#0b0e12;padding:10px 12px}
+    .fail-table-panel.keep{border-color:#2d5a42}
+    .fail-table-panel.discard{border-color:#3d5a7a}
+    .fail-table-panel h3{margin:0 0 8px;font-size:.9rem}
+    .fail-table-panel.keep h3{color:var(--lstm)}
+    .fail-table-panel.discard h3{color:var(--full)}
+    table{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:.78rem}
+    th,td{text-align:left;padding:6px 8px;border-bottom:1px solid #1c232d}
+    th{color:var(--muted)}
+    .fail-num{color:var(--full);font-weight:700}
+    .shot{scroll-margin:20px}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero shot" data-shot="01-header">
+      <h1>test time optimization — Verilumen simulation agent</h1>
+      <p>Upload a STIL and run. Click any filled Verilumen agent slot (or Prev/Next) to replay how that pick was chosen — yellow cells = different 0/1 bits.</p>
+      <div class="flow">STIL → compile → vector memory → playback → DUT pins</div>
+    </header>
+
+    <div class="layout">
+      <aside class="panel shot" data-shot="02-sidebar">
+        <h2>STIL file</h2>
+        <div class="file-name">Production_SCAN_stuck_at_1000pat.stil</div>
+        <button class="btn">Run live simulation</button>
+        <button class="btn secondary">Stop</button>
+        <div class="panel-divider"></div>
+        <h2>Fail logs</h2>
+        <p class="field-hint">Client selects log folders on their own PC. Fail counts are computed locally in the browser.</p>
+        <button class="btn secondary">Add log folder</button>
+        <button class="btn secondary">Add log files</button>
+        <div class="file-name">LOT_1_Center</div>
+        <div class="file-name">LOT_2_Donut</div>
+        <div class="chooser-meta" style="color:var(--accent);font-size:.8rem">2 folder(s) · 20 file(s)</div>
+        <button class="btn" style="margin-top:10px">Analyze fail counts</button>
+        <button class="btn secondary">Clear logs</button>
+      </aside>
+
+      <main>
+        <div class="shot" data-shot="03-status">
+          <div class="status">Done. Verilumen agent chose 600/1000 patterns — 40% less peak vector RAM.</div>
+          <div class="progress"><div></div></div>
+        </div>
+
+        <div class="chooser-window shot" data-shot="04-first10">
+          <div class="chooser-window-head">
+            <h2>First 10 patterns</h2>
+            <div class="chooser-meta">Viewing slot 3 / 10</div>
+          </div>
+          <div class="ten-wrap">
+            <div class="ten-board normal">
+              <div class="ten-title">without verilumen agent order</div>
+              <div class="ten-grid">
+                <div class="ten-slot filled"><div class="ten-slot-num">1</div><div class="ten-slot-pid">P0</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">2</div><div class="ten-slot-pid">P1</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">3</div><div class="ten-slot-pid">P2</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">4</div><div class="ten-slot-pid">P3</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">5</div><div class="ten-slot-pid">P4</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">6</div><div class="ten-slot-pid">P5</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">7</div><div class="ten-slot-pid">P6</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">8</div><div class="ten-slot-pid">P7</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">9</div><div class="ten-slot-pid">P8</div><div class="ten-slot-tag">RUN</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">10</div><div class="ten-slot-pid">P9</div><div class="ten-slot-tag">RUN</div></div>
+              </div>
+            </div>
+            <div class="ten-board lstm">
+              <div class="ten-title">top 10 pick of verilumen agent</div>
+              <div class="ten-grid">
+                <div class="ten-slot filled"><div class="ten-slot-num">1</div><div class="ten-slot-pid">P0</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">2</div><div class="ten-slot-pid">P531</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">3</div><div class="ten-slot-pid">P849</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">4</div><div class="ten-slot-pid">P12</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">5</div><div class="ten-slot-pid">P816</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">6</div><div class="ten-slot-pid">P920</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">7</div><div class="ten-slot-pid">P269</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">8</div><div class="ten-slot-pid">P384</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">9</div><div class="ten-slot-pid">P90</div><div class="ten-slot-tag">KEEP</div></div>
+                <div class="ten-slot filled"><div class="ten-slot-num">10</div><div class="ten-slot-pid">P882</div><div class="ten-slot-tag">KEEP</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="how-pick">
+            <div class="how-pick-label">HOW VERILUMEN AGENT TAKES SLOT 3 → P849 — after P531 (highest distance wins)</div>
+            <div class="bit-strip" id="bits"></div>
+          </div>
+        </div>
+
+        <div class="gauges shot" data-shot="05-ram">
+          <div class="gauge-card full"><div class="label">without verilumen agent vector RAM</div><div class="value">12.40 MB</div><div class="bar-track"><div class="bar-fill full"></div></div></div>
+          <div class="gauge-card lstm"><div class="label">with verilumen agent vector RAM</div><div class="value">7.18 MB</div><div class="bar-track"><div class="bar-fill lstm"></div></div></div>
+        </div>
+
+        <div class="gauges shot" data-shot="06-time">
+          <div class="gauge-card full"><div class="label">without verilumen agent test time</div><div class="value">1.24 s</div><div class="bar-track"><div class="bar-fill full"></div></div></div>
+          <div class="gauge-card lstm"><div class="label">with verilumen agent test time</div><div class="value">0.74 s</div><div class="bar-track"><div class="bar-fill lstm time-l"></div></div></div>
+        </div>
+
+        <div class="metrics shot" data-shot="07-metrics">
+          <div class="metric"><div class="k">Host RSS</div><div class="v">842 MB</div></div>
+          <div class="metric"><div class="k">Patterns</div><div class="v">1000</div></div>
+          <div class="metric"><div class="k">Pins</div><div class="v">23</div></div>
+          <div class="metric"><div class="k">Cycles</div><div class="v">12,400,000</div></div>
+          <div class="metric"><div class="k">Test time saved</div><div class="v">0.50 s (40.0%)</div></div>
+        </div>
+
+        <div class="chart-wrap shot" data-shot="08-chart">
+          <div class="chart-title">Live vector memory (MB) — blue = without verilumen agent, green = with verilumen agent</div>
+          <div class="fake-chart"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="done-banner shot" data-shot="09-summary">
+          Verilumen agent chose <strong>600/1000</strong> patterns — auto keep 600/1000 (hit max keep 60%)<br />
+          Without verilumen agent <strong>12.40 MB</strong> / test time <strong>1.24 s</strong> → With verilumen agent <strong>7.18 MB</strong> / test time <strong>0.74 s</strong> · saved <strong>5.22 MB</strong> (40%) · test time saved <strong>0.50 s (40.0%)</strong>
+        </div>
+
+        <div class="lists-wrap shot" data-shot="10-patterns">
+          <div class="pattern-panel keep">
+            <div class="pattern-panel-head"><h2>high recommended patterns order</h2><span class="chooser-meta">600 patterns</span></div>
+            <div class="pattern-panel-body">
+              <div class="pattern-id-grid">
+                <span class="pattern-id-chip">P0 <span class="fail-badge">2F</span></span>
+                <span class="pattern-id-chip">P531</span>
+                <span class="pattern-id-chip">P849 <span class="fail-badge">1F</span></span>
+                <span class="pattern-id-chip">P12</span>
+                <span class="pattern-id-chip">P816</span>
+                <span class="pattern-id-chip">P237 <span class="fail-badge">8F</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="pattern-panel discard">
+            <div class="pattern-panel-head"><h2>low risk patterns</h2><span class="chooser-meta">400 patterns</span></div>
+            <div class="discard-example">
+              <div class="discard-example-title">EXAMPLE — WHY P648 WAS NOT LOADED</div>
+              <p class="discard-example-body">P648 is a valid pattern; however, it was not selected for loading because its Verilumen agent embedding shows high similarity with the already retained pattern P751 (distance = 0.0449). Since it provides minimal additional stimulus coverage, it was excluded to optimize vector RAM utilization.</p>
+              <div class="discard-bits-caption">Bit-level compare (234 scan bits) — embedding distance 0.0449 · Yellow = different bits</div>
+              <div class="bit-strip-wrap"><span class="bit-strip-label">Kept P751</span><div class="bit-strip" id="demo-kept-bits"></div></div>
+              <div class="bit-strip-wrap"><span class="bit-strip-label">Low-risk P648 (not loaded)</span><div class="bit-strip" id="demo-disc-bits"></div></div>
+            </div>
+            <div class="pattern-panel-body">
+              <div class="pattern-id-grid">
+                <span class="pattern-id-chip">P648 <span class="fail-badge">3F</span></span>
+                <span class="pattern-id-chip">P863</span>
+                <span class="pattern-id-chip">P753</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="shot" data-shot="11-fails" style="margin-top:16px">
+          <div class="fail-summary">
+            <div class="metric"><div class="k">Log folders</div><div class="v">9</div></div>
+            <div class="metric"><div class="k">Kept fails</div><div class="v">1430</div></div>
+            <div class="metric"><div class="k">Discarded fails</div><div class="v">1028</div></div>
+            <div class="metric"><div class="k">Files parsed</div><div class="v">90</div></div>
+          </div>
+          <div class="lists-wrap">
+            <div class="fail-table-panel keep">
+              <h3>high recommended patterns fails</h3>
+              <table>
+                <thead><tr><th>#</th><th>Pattern</th><th>Fails</th><th>Passes</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>P237</td><td class="fail-num">8</td><td>82</td></tr>
+                  <tr><td>2</td><td>P207</td><td class="fail-num">7</td><td>83</td></tr>
+                  <tr><td>3</td><td>P250</td><td class="fail-num">7</td><td>83</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="fail-table-panel discard">
+              <h3>low risk patterns fail</h3>
+              <table>
+                <thead><tr><th>#</th><th>Pattern</th><th>Fails</th><th>Passes</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>P112</td><td class="fail-num">6</td><td>84</td></tr>
+                  <tr><td>2</td><td>P401</td><td class="fail-num">5</td><td>85</td></tr>
+                  <tr><td>3</td><td>P648</td><td class="fail-num">3</td><td>87</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    const strip = document.getElementById('bits');
+    if (strip) {
+      for (let i = 0; i < 60; i++) {
+        const s = document.createElement('span');
+        const one = Math.random() > 0.5;
+        s.className = 'bit-cell ' + (one ? 'one' : 'zero') + (Math.random() > 0.85 ? ' diff' : '');
+        s.textContent = one ? '1' : '0';
+        strip.appendChild(s);
+      }
+    }
+    const kept = document.getElementById('demo-kept-bits');
+    const disc = document.getElementById('demo-disc-bits');
+    if (kept && disc) {
+      for (let i = 0; i < 234; i++) {
+        const a = Math.random() > 0.45 ? 1 : 0;
+        const diff = Math.random() > 0.92;
+        const b = diff ? 1 - a : a;
+        for (const [el, v] of [[kept, a], [disc, b]]) {
+          const s = document.createElement('span');
+          s.className = 'bit-cell ' + (v ? 'one' : 'zero') + (diff ? ' diff' : '');
+          s.textContent = String(v);
+          el.appendChild(s);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

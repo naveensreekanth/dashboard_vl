@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verilumen agent — step-by-step flow</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f3f5f7;
+      --ink: #15202b;
+      --muted: #5a6875;
+      --card: #ffffff;
+      --stroke: #d5dde5;
+      --blue: #1d6fb8;
+      --purple: #5b4db8;
+      --green: #0f6b4c;
+      --steel: #3d6ea8;
+      --gold: #9a7420;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 16px 48px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0 auto;
+      max-width: 34rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .step {
+      background: var(--card);
+      border: 2px solid var(--stroke);
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+    }
+    .step .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .step .num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .step .label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+    .step h2 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+    }
+    .step > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .step ul {
+      margin: 10px 0 0;
+      padding-left: 1.15rem;
+      font-size: 0.86rem;
+    }
+    .step li { margin: 4px 0; }
+    .step code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      background: #eef2f6;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .note {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f6f8fa;
+      border-left: 3px solid var(--stroke);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .note strong { color: var(--ink); }
+
+    .step.s1 { border-color: #8db7df; }
+    .step.s1 .num { background: var(--blue); }
+    .step.s1 .label { color: var(--blue); }
+    .step.s1 .note { border-left-color: var(--blue); background: #eaf3fb; }
+
+    .step.s2 { border-color: #b3a9e3; }
+    .step.s2 .num { background: var(--purple); }
+    .step.s2 .label { color: var(--purple); }
+    .step.s2 .note { border-left-color: var(--purple); background: #f1eefb; }
+
+    .step.s3 { border-color: #b3a9e3; }
+    .step.s3 .num { background: var(--purple); }
+    .step.s3 .label { color: var(--purple); }
+    .step.s3 .note { border-left-color: var(--purple); background: #f1eefb; }
+
+    .step.s4 { border-color: #b3a9e3; }
+    .step.s4 .num { background: var(--purple); }
+    .step.s4 .label { color: var(--purple); }
+    .step.s4 .note { border-left-color: var(--purple); background: #f1eefb; }
+
+    .step.s5a { border-color: #8fc9a8; }
+    .step.s5a .num { background: var(--green); }
+    .step.s5a .label { color: var(--green); }
+    .step.s5a .note { border-left-color: var(--green); background: #e8f6ef; }
+
+    .step.s5b { border-color: #9bb4d0; }
+    .step.s5b .num { background: var(--steel); }
+    .step.s5b .label { color: var(--steel); }
+    .step.s5b .note { border-left-color: var(--steel); background: #eaf0f7; }
+
+    .step.s6 { border-color: #d4bc74; }
+    .step.s6 .num { background: var(--gold); }
+    .step.s6 .label { color: var(--gold); }
+    .step.s6 .note { border-left-color: var(--gold); background: #faf4e4; }
+
+    .step.s7 { border-color: #8fc9a8; }
+    .step.s7 .num { background: var(--green); }
+    .step.s7 .label { color: var(--green); }
+    .step.s7 .note { border-left-color: var(--green); background: #e8f6ef; }
+
+    .arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px 0;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      gap: 2px;
+      text-align: center;
+    }
+    .arrow .line {
+      width: 2px;
+      height: 18px;
+      background: #9aa3ad;
+    }
+    .arrow .tip {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #9aa3ad;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .split-label {
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      padding: 4px 0 2px;
+    }
+
+    .mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    @media (max-width: 520px) {
+      .mini { grid-template-columns: 1fr; }
+    }
+    .mini div {
+      background: #f8fafb;
+      border: 1px solid var(--stroke);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.8rem;
+    }
+    .mini strong {
+      display: block;
+      font-size: 0.82rem;
+      margin-bottom: 2px;
+    }
+    .mini span { color: var(--muted); font-size: 0.78rem; }
+
+    /* Step 3: embed example + visual side by side */
+    .embed-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+    @media (max-width: 800px) {
+      .embed-row { grid-template-columns: 1fr; }
+    }
+    .embed-row .step {
+      margin: 0;
+    }
+    .embed-viz {
+      background: #f8f6fc;
+      border: 2px solid #b3a9e3;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .embed-viz .viz-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--purple);
+    }
+    .embed-viz h3 {
+      margin: 0;
+      font-size: 0.98rem;
+    }
+    .embed-viz .viz-sub {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .viz-pipe {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .viz-box {
+      background: #fff;
+      border: 1px solid #d5dde5;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .viz-box .k {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .bits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .bits i {
+      width: 18px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #c5ccd4;
+      border-radius: 3px;
+      background: #f4f6f8;
+      font-style: normal;
+    }
+    .bits i.on {
+      background: #eef2ff;
+      border-color: #a99de0;
+      color: var(--purple);
+    }
+    .viz-arrow {
+      text-align: center;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      color: var(--purple);
+      font-weight: 600;
+    }
+    .lstm-box {
+      border-color: #b3a9e3;
+      background: #f1eefb;
+      text-align: center;
+      padding: 12px;
+    }
+    .lstm-box strong {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--purple);
+    }
+    .lstm-box span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .vec {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+    }
+    .vec b {
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: #e8f6ef;
+      border: 1px solid #8fc9a8;
+      color: var(--green);
+      font-weight: 600;
+    }
+    .vec .more {
+      color: var(--muted);
+      align-self: center;
+      font-weight: 500;
+    }
+    .vec-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 4px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.62rem;
+    }
+    .vec-grid b {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 2px;
+      border-radius: 5px;
+      font-weight: 600;
+      border: 1px solid #8fc9a8;
+      background: #e8f6ef;
+      color: var(--green);
+    }
+    .vec-grid b.pos {
+      background: #e8f6ef;
+      border-color: #8fc9a8;
+      color: var(--green);
+    }
+    .vec-grid b.neg {
+      background: #eef2ff;
+      border-color: #a99de0;
+      color: var(--purple);
+    }
+    .vec-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      margin-top: 8px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .vec-legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: -1px;
+      border: 1px solid transparent;
+    }
+    .vec-legend i.pos {
+      background: #e8f6ef;
+      border-color: #8fc9a8;
+    }
+    .vec-legend i.neg {
+      background: #eef2ff;
+      border-color: #a99de0;
+    }
+    @media (max-width: 520px) {
+      .vec-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .analogy {
+      margin-top: 2px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 8px 10px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px dashed #c4bcec;
+    }
+    .analogy strong { color: var(--ink); }
+
+    .rank-viz {
+      background: #f8f6fc;
+      border: 2px solid #b3a9e3;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .rank-viz .viz-title {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 4px;
+    }
+    .rank-viz h3 {
+      margin: 0 0 4px;
+      font-size: 0.98rem;
+    }
+    .rank-viz .viz-sub {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .rank-board {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .rank-chip {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid #d0d7de;
+      background: #fff;
+      color: var(--muted);
+    }
+    .rank-chip.seed {
+      border-color: var(--green);
+      background: #e8f6ef;
+      color: var(--green);
+    }
+    .rank-chip.pick {
+      border-color: var(--purple);
+      background: #f1eefb;
+      color: var(--purple);
+    }
+    .rank-chip.far {
+      box-shadow: 0 0 0 2px #c4bcec;
+    }
+    .rank-chip.near {
+      opacity: 0.55;
+    }
+    .rank-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.78rem;
+    }
+    .rank-steps div {
+      background: #fff;
+      border: 1px solid #d5dde5;
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .rank-steps strong { color: var(--ink); }
+    .rank-steps span { color: var(--muted); }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Verilumen agent — step by step</h1>
+      <p>
+        Read from top to bottom. Each step’s output becomes the next step’s input.
+      </p>
+    </header>
+
+    <div class="flow">
+
+      <!-- 1 -->
+      <section class="step s1">
+        <div class="badge">
+          <div class="num">1</div>
+          <div class="label">Start · Input</div>
+        </div>
+        <h2>You upload a STIL file and click Run</h2>
+        <p>This is the only required input for the main recommendation.</p>
+        <ul>
+          <li>STIL contains many patterns (P0, P1, P2…)</li>
+          <li>Each pattern has scan bits (0/1) and cycle count</li>
+        </ul>
+        <div class="note"><strong>Output of step 1:</strong> STIL file ready for the worker</div>
+      </section>
+
+      <div class="arrow"><span>then</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 2 -->
+      <section class="step s1">
+        <div class="badge">
+          <div class="num">2</div>
+          <div class="label">Parse</div>
+        </div>
+        <h2>Agent reads every pattern from the STIL</h2>
+        <p>It streams the file (does not need the whole file in memory at once).</p>
+        <ul>
+          <li>Collect pattern IDs</li>
+          <li>Collect scan bit data</li>
+          <li>Estimate full-suite cost if ATE ran <em>all</em> patterns (blue “without agent” side)</li>
+        </ul>
+        <div class="note"><strong>Output of step 2:</strong> list of patterns + bits + full-suite RAM/time baseline</div>
+      </section>
+
+      <div class="arrow"><span>then</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 3 EMBED: text + visual side by side -->
+      <div class="embed-row">
+        <section class="step s2">
+          <div class="badge">
+            <div class="num">3</div>
+            <div class="label">Embed</div>
+          </div>
+          <h2>Each pattern gets an embedding</h2>
+          <p>An LSTM model turns scan bits into a short number vector.</p>
+
+          <div class="note" style="margin-top:12px">
+            <strong>Example — pattern P12</strong><br />
+            Imagine P12’s scan chain starts like:
+            <code>1 1 0 1 0 0 1 1 0 1 …</code> (hundreds of bits).<br /><br />
+            The agent does <em>not</em> compare all raw bits later.
+            Instead it compresses P12 into a short embedding, e.g.
+            <code>[0.12, -0.41, 0.88, …]</code> (32 numbers).<br /><br />
+            Patterns with <strong>similar embeddings</strong> look alike → one can stay
+            kept, the other may be low-risk skip.<br />
+            Patterns with <strong>very different embeddings</strong> are both useful to keep.
+          </div>
+
+          <ul>
+            <li>Same STIL always gives the same ranking (fixed random seed)</li>
+            <li>Also saves a 234-bit preview for later yellow bit compare</li>
+          </ul>
+          <div class="note"><strong>Output of step 3:</strong> one embedding vector per pattern + bit previews</div>
+        </section>
+
+        <aside class="embed-viz" aria-label="How embedding works for example P12">
+          <div class="viz-title">Inside the agent · example P12</div>
+          <h3>How embedding works</h3>
+          <p class="viz-sub">Simple picture of what happens to one pattern</p>
+
+          <div class="viz-pipe">
+            <div class="viz-box">
+              <div class="k">1 · Raw scan bits of P12</div>
+              <div class="bits" title="Example bit preview">
+                <i class="on">1</i><i class="on">1</i><i>0</i><i class="on">1</i>
+                <i>0</i><i>0</i><i class="on">1</i><i class="on">1</i>
+                <i>0</i><i class="on">1</i><i class="on">1</i><i>0</i>
+                <i>0</i><i class="on">1</i><i>0</i><i class="on">1</i>
+              </div>
+              <div style="margin-top:6px;font-size:0.72rem;color:var(--muted)">
+                long 0/1 sequence from the STIL (only a few bits shown)
+              </div>
+            </div>
+
+            <div class="viz-arrow">↓ feed into LSTM</div>
+
+            <div class="viz-box lstm-box">
+              <strong>LSTM embedding model</strong>
+              <span>reads the bit sequence · squeezes it into a short vector</span>
+            </div>
+
+            <div class="viz-arrow">↓ output embedding</div>
+
+            <div class="viz-box">
+              <div class="k">2 · Embedding of P12 — all 32 numbers</div>
+              <div class="vec-grid" aria-label="32 embedding numbers for P12">
+                <b class="pos">0.12</b><b class="neg">-0.41</b><b class="pos">0.88</b><b class="pos">0.05</b><b class="neg">-0.73</b><b class="pos">0.33</b><b class="neg">-0.19</b><b class="pos">0.61</b>
+                <b class="pos">0.07</b><b class="neg">-0.55</b><b class="pos">0.42</b><b class="pos">0.91</b><b class="neg">-0.28</b><b class="pos">0.14</b><b class="neg">-0.66</b><b class="pos">0.38</b>
+                <b class="pos">0.22</b><b class="neg">-0.09</b><b class="pos">0.77</b><b class="neg">-0.31</b><b class="pos">0.58</b><b class="pos">0.03</b><b class="neg">-0.84</b><b class="pos">0.46</b>
+                <b class="neg">-0.17</b><b class="pos">0.69</b><b class="pos">0.25</b><b class="neg">-0.52</b><b class="pos">0.11</b><b class="pos">0.80</b><b class="neg">-0.37</b><b class="pos">0.44</b>
+              </div>
+              <div class="vec-legend">
+                <span><i class="pos"></i> positive value</span>
+                <span><i class="neg"></i> negative value</span>
+                <span>32 slots = full embedding</span>
+              </div>
+              <div class="analogy" style="margin-top:8px">
+                <strong>In short:</strong>
+                32 numbers = compact embedding of P12.
+                Agent compares these 32-number lists (not hundreds of raw bits).
+                Short enough to be fast, enough to capture the pattern’s main shape.
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="arrow"><span>then</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 4 RANK: text + visual side by side -->
+      <div class="embed-row">
+        <section class="step s3">
+          <div class="badge">
+            <div class="num">4</div>
+            <div class="label">Rank</div>
+          </div>
+          <h2>Agent orders patterns by diversity</h2>
+          <p>Goal: keep patterns that look different from each other.</p>
+
+          <div class="note" style="margin-top:12px">
+            <strong>Example</strong> — start with embeddings of P0, P12, P531, P648…<br /><br />
+            Seed with <code>P0</code>. Next pick the pattern whose embedding is
+            <strong>farthest</strong> from P0 (say <code>P531</code>).
+            Then pick farthest from <em>both</em> P0 and P531, and so on.<br /><br />
+            Near ones (like a twin of P0) stay lower in the list.
+          </div>
+
+          <div class="mini">
+            <div>
+              <strong>4a · Seed</strong>
+              <span>Start with P0 if present</span>
+            </div>
+            <div>
+              <strong>4b · Loop</strong>
+              <span>Next = farthest from already kept</span>
+            </div>
+            <div>
+              <strong>4c · Update</strong>
+              <span>Refresh distances after each pick</span>
+            </div>
+            <div>
+              <strong>4d · Repeat</strong>
+              <span>Until every pattern is ranked</span>
+            </div>
+          </div>
+          <div class="note"><strong>Output of step 4:</strong> ranked list (most diverse first → least diverse last)</div>
+        </section>
+
+        <aside class="rank-viz" aria-label="How ranking works with a small example">
+          <div class="viz-title">Inside the agent · tiny example</div>
+          <h3>How ranking works</h3>
+          <p class="viz-sub">Distance = how different two embeddings are</p>
+
+          <div class="rank-board">
+            <span class="rank-chip seed">P0 seed</span>
+            <span class="rank-chip near">P12 near</span>
+            <span class="rank-chip pick far">P531 far</span>
+            <span class="rank-chip near">P648 near</span>
+          </div>
+
+          <div class="rank-steps">
+            <div><strong>1 · Seed</strong> — keep <span>P0</span> first</div>
+            <div><strong>2 · Pick farthest</strong> — <span>P531</span> is farthest from P0 → rank #2</div>
+            <div><strong>3 · Update</strong> — recompute distance to {P0, P531}</div>
+            <div><strong>4 · Next</strong> — pick the new farthest · repeat for all</div>
+          </div>
+
+          <div class="analogy" style="margin-top:10px">
+            <strong>In short:</strong>
+            Always add the pattern most different from ones already ranked.
+            Similar ones (near) come later → more likely skipped after the cut.
+          </div>
+        </aside>
+      </div>
+
+      <div class="arrow"><span>then</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 5 -->
+      <section class="step s4">
+        <div class="badge">
+          <div class="num">5</div>
+          <div class="label">Cut</div>
+        </div>
+        <h2>Agent decides how many to keep</h2>
+        <p>It does not keep everything — it cuts the ranked list.</p>
+        <ul>
+          <li>Keep at least ~20% and at most ~60% (defaults)</li>
+          <li>Stop earlier if new patterns add almost no new diversity</li>
+          <li>Optional: also stop if a RAM budget would be exceeded</li>
+        </ul>
+        <div class="note"><strong>Output of step 5:</strong> number <code>k</code> — keep first k, skip the rest</div>
+      </section>
+
+      <div class="arrow"><span>then the list splits into two</span><div class="line"></div><div class="tip"></div></div>
+      <div class="split-label">two results from the same cut</div>
+
+      <div class="split">
+        <section class="step s5a">
+          <div class="badge">
+            <div class="num">6a</div>
+            <div class="label">Keep · Load</div>
+          </div>
+          <h2>High recommended</h2>
+          <p>First <code>k</code> patterns in the ranked list.</p>
+          <ul>
+            <li>These are diverse</li>
+            <li>Put these into ATE</li>
+            <li>Shown as green “with agent”</li>
+          </ul>
+          <div class="note"><strong>Meaning:</strong> run these to save cost while keeping variety</div>
+        </section>
+
+        <section class="step s5b">
+          <div class="badge">
+            <div class="num">6b</div>
+            <div class="label">Skip · Don’t load</div>
+          </div>
+          <h2>Low risk</h2>
+          <p>Patterns after position <code>k</code>.</p>
+          <ul>
+            <li>Too similar to a kept one</li>
+            <li>Shows distance + yellow bit diffs</li>
+            <li>Suggested not to load</li>
+          </ul>
+          <div class="note"><strong>Meaning:</strong> skip these to reduce ATE cost</div>
+        </section>
+      </div>
+
+      <div class="arrow"><span>then dashboard shows the results</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 7 -->
+      <section class="step s6">
+        <div class="badge">
+          <div class="num">7</div>
+          <div class="label">Dashboard</div>
+        </div>
+        <h2>You see evidence and savings</h2>
+        <div class="mini">
+          <div>
+            <strong>First 10 picks</strong>
+            <span>How early keep choices were made</span>
+          </div>
+          <div>
+            <strong>RAM &amp; time gauges</strong>
+            <span>Blue = all patterns · Green = kept only</span>
+          </div>
+          <div>
+            <strong>Live chart</strong>
+            <span>Memory over the run</span>
+          </div>
+          <div>
+            <strong>Low-risk compare</strong>
+            <span>Click a skip pattern → bits vs nearest kept</span>
+          </div>
+        </div>
+        <div class="note"><strong>Output of step 7:</strong> clear keep list, skip list, and cost comparison</div>
+      </section>
+
+      <div class="arrow"><span>finally</span><div class="line"></div><div class="tip"></div></div>
+
+      <!-- 8 -->
+      <section class="step s7">
+        <div class="badge">
+          <div class="num">8</div>
+          <div class="label">Your action on ATE</div>
+        </div>
+        <h2>Load only the high recommended patterns</h2>
+        <p>That is how you reduce vector memory and test time.</p>
+        <ul>
+          <li>Use the keep IDs in your ATE job / pattern set</li>
+          <li>Do not load the low-risk IDs if you want the savings</li>
+          <li>Optional later: fail logs to check the skip list on silicon</li>
+        </ul>
+        <div class="note"><strong>End:</strong> cheaper ATE run using the agent’s keep list</div>
+      </section>
+
+    </div>
+
+    <footer>
+      docs/agent-block-diagram.html · sequential flow · open this file in a browser when you want
+    </footer>
+  </div>
+</body>
+</html>

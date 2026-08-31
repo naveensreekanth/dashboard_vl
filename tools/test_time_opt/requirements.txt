@@ -1,0 +1,3 @@
+# torch installed in Docker (CPU). Keep this file light for local pip too.
+numpy>=1.24
+psutil>=5.9
